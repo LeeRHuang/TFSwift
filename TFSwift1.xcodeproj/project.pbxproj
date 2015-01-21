@@ -13,6 +13,7 @@
 		042B9C151A305D0400F47954 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 042B9C141A305D0400F47954 /* Images.xcassets */; };
 		042B9C181A305D0400F47954 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 042B9C161A305D0400F47954 /* LaunchScreen.xib */; };
 		042B9C241A305D0400F47954 /* TFSwift1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B9C231A305D0400F47954 /* TFSwift1Tests.swift */; };
+		04BB0FC21A5A31F600DE2859 /* TestClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BB0FC11A5A31F600DE2859 /* TestClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		042B9C1D1A305D0400F47954 /* TFSwift1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TFSwift1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		042B9C221A305D0400F47954 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		042B9C231A305D0400F47954 /* TFSwift1Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TFSwift1Tests.swift; sourceTree = "<group>"; };
+		04BB0FC11A5A31F600DE2859 /* TestClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestClass.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			children = (
 				042B9C0D1A305D0400F47954 /* AppDelegate.swift */,
 				042B9C0F1A305D0400F47954 /* ViewController.swift */,
+				04BB0FC11A5A31F600DE2859 /* TestClass.swift */,
 				042B9C111A305D0400F47954 /* Main.storyboard */,
 				042B9C141A305D0400F47954 /* Images.xcassets */,
 				042B9C161A305D0400F47954 /* LaunchScreen.xib */,
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				042B9C101A305D0400F47954 /* ViewController.swift in Sources */,
+				04BB0FC21A5A31F600DE2859 /* TestClass.swift in Sources */,
 				042B9C0E1A305D0400F47954 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +411,7 @@
 				042B9C291A305D0400F47954 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		042B9C2A1A305D0400F47954 /* Build configuration list for PBXNativeTarget "TFSwift1Tests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +420,7 @@
 				042B9C2C1A305D0400F47954 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
