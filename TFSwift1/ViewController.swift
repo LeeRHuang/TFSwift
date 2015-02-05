@@ -56,6 +56,10 @@ Tips:
 42、contiune只用于for循环，跳出此次循环，break用于for或者switch语句终止整个循环，在循环体使用break会终止整个循环，调到{}后的第一句代码去执行
 43、swift中的switch一旦匹配了case执行完,整个语句就结束了,不需要显示的在case语句中插入break来中断整个语句；而c语言的switch语句需要在匹配的case快中插入break来中断整个语句，否则会跳入到下一个case块中一次执行。要达到C语言这种模式，可以使用关键字fallthrough，加fallthrough关键字会跳转到下一个case块中，继续执行。
 44、标签一个循环体或者loop循环，当使用continue或者break带上这个标签，可以控制该标签代表对象的终端或者执行
+45、无形参函数，即时没有参数，在函数被调用时候还是需要带一对空括号
+46、本地形参名称和外部形参名称,本地形参名称只能在函数内部使用，外部形参写在本地形参之前，用一个空格分开，如果本地形参和外部形参名称一样，那么可以使用#(hash符合)代替外部形参
+47、默认形参值，可以为任何形参定义默认值，作为函数的一部分，如果参数有默认值，调用时候可以不传值，使用默认值空字符串""
+48、可变形参,可以接受0个或者 多个指定值得参数，在形参类型后面加三个点...来编写可变形参,但是函数最多只有一个可变形参，如果函数已经有一个或者多个带有默认值的形参，并且还有可变形参，那么可变形参放在所有形参之后
 */
 import UIKit
 
@@ -70,6 +74,7 @@ class ViewController: UIViewController {
         learnCapterOne()
         learnCapterTwo()
         learnCapterThree()
+        learnFunctionChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -933,7 +938,7 @@ class ViewController: UIViewController {
                   break studentLoop  //在break后面调用，终端while循环
                 case "邓斌":
                     println("name === \(name)")
-                continue studentLoop
+                  break studentLoop
                  default:
                  println("noting!")
                 }
@@ -941,7 +946,154 @@ class ViewController: UIViewController {
         }
     }
     
+    /****************************************函数*****************************/
     func learnFunctionChapter(){
+        //函数是一个执行特定任务的代码块，通过给定一个函数名称标示它，在需要时候使用该名称来调用函数执行任务
+        //swfit的函数都有一个类型，返回类型和参数类型，可以作为参数传递，也可以作为函数的返回值返回
+        
+        func sayHelloToOther(greeter:String)->String{
+            let greetString = "\(greeter) " + "say hello"
+            return greetString;
+        }
+        //调用
+       var greetString = sayHelloToOther("Wang")
+       println("====\(greetString)")
+        
+       //可以包含多个参数，以逗号(,)隔开
+        func caculateZoneLength(start:Int,end:Int)->Int{
+            return end - start
+        }
+        println("length === \(caculateZoneLength(10, 2))")
+        
+        //无形参函数，即时没有参数，在函数被调用时候还是需要带一对空括号
+        func whoIsTheBestOne()->String{
+            return "Best One"
+        }
+        whoIsTheBestOne()
+        
+        //无返回值函数，严格来说还是返回了一个空的元组()
+        func waveSayHello(){
+            println("hello everybody")
+        }
+        waveSayHello()
+        
+        func printStringElements(name:String)->Int{
+            println("name is \(name)")
+            return countElements(name)
+        }
+        printStringElements("李德华")
+        
+        //多返回值函数
+        func compareWhoIsOldestPerson(age:Int,name:String)->(older:Bool,age:Int){
+            let vaule = (true,1)
+            if age >= 89 ? true : false{
+                return (true,age)
+            }
+            return (false,age)
+        }
+        compareWhoIsOldestPerson(90,"Lee")
+        
+        //本地形参名称和外部形参名称,本地形参名称只能在函数内部使用，外部形参写在本地形参之前，用一个空格分开，如果本地形参和外部形参名称一样，那么可以使用#(hash符合)代替外部形参
+        func registerInfomation(age localAge : String,name localName : String,condition localCondition : String)->String{
+            return localName + localAge + localCondition
+        }
+        let infomation = registerInfomation(age: "20", name: "Liu", condition: "Partier")
+        println("infomation === \(infomation)")
+        
+        //使用#代替外部形参
+        func login(# mobile:String,#password:String)->Bool{
+            if countElements(mobile) > 0 && countElements(password) > 0{
+                return true
+            }
+            return false
+        }
+        let success = login(mobile: "18910001111", password: "123456")
+        if success{
+            println("login success!")
+        }
+        
+        func containCharacter(#string : String,#characterToEnd : Character)->Bool{
+            for character in string{
+                if character == characterToEnd{
+                    return true
+                }
+            }
+            return false
+        }
+        
+        let isContain = containCharacter(string: "有钱就是人性", characterToEnd: "任")
+        if isContain{
+            println("contained")
+        }else{
+            println("there no exist matched character")
+        }
+        
+        //默认形参值，可以为任何形参定义默认值，作为函数的一部分
+        func join(string s1:String,toString s2:String,withJoiner s3:String = "-")->String{
+            return s1 + s2 + s3
+        }
+        
+        let joinCombineString = join(string: "my ", toString: "name ", withJoiner:"Lee")
+        println("joinCombineString == \(joinCombineString)")
+        //如果参数有默认值，调用时候可以没传值，使用默认值""
+        let noDefaultStr = join(string: "you", toString:"Name")
+        println("noDefaultStr == \(noDefaultStr)")
+        
+        //可变形参,可以接受0个或者 多个指定值得参数，在形参类型后面加三个点...来编写可变形参
+        func caculateAverageVaule(score:Double...)->Double{
+            var temp:Double = 0
+            for number in score{
+                temp += number
+            }
+            return temp / Double(score.count)
+        }
+       var average = caculateAverageVaule(1,4,6,9)
+       println("average === \(average)")
+       var average2 = caculateAverageVaule(1,4,7)
+       println("average2 === \(average2)")
+        
+        //但是函数最多只有一个可变形参，如果函数已经有一个或者多个带有默认值的形参，并且还有可变形参，那么可变形参放在所有形参之后
+        func orderByHegiht(name:String = "",height:Double = 1.60,clasees:Double...)->Bool{
+            if height >= 1.70{
+                return true
+            }
+            return false
+        }
+        let order = orderByHegiht(name: "Lee", height: 1.70, 349,352)
+        println("order === \(order)")
+        
+        //常量形参、变量形参
+        //函数默认的参数是常量形参,我们不能够修改形参的值，否则不能编译
+        func changeArgment(str:String,orderDate:String,price:Double){
+//            str = "hhh"  //修改形参的值，报编译错误
+        }
+        
+        //变量形参可以有多个，也可以作为函数的修改的副本
+        func changeState(errorCode : Double,var errorMessage:String)->Bool{
+            if errorCode == 404{
+            }
+            switch errorCode{
+            case 404:
+                errorMessage = "NetWorking Error"
+                return false;
+            case 200:
+                errorMessage = "NetWorking Okay"
+                return true;
+            default:
+                errorMessage = "check other"
+                return false;
+            }
+        }
+        
+        func alignRight(var str:String,count:Int,pad:Character)->String{
+            let amountToPad = count - countElements(str)
+            for _ in 1...amountToPad{ //不需要遍历其中的值
+                str += "-"
+            }
+            return str
+        }
+       let rightStr = alignRight("LeeRHuang", 11, "1")
+        
         
     }
 
