@@ -60,6 +60,11 @@ Tips:
 46、本地形参名称和外部形参名称,本地形参名称只能在函数内部使用，外部形参写在本地形参之前，用一个空格分开，如果本地形参和外部形参名称一样，那么可以使用#(hash符合)代替外部形参
 47、默认形参值，可以为任何形参定义默认值，作为函数的一部分，如果参数有默认值，调用时候可以不传值，使用默认值空字符串""
 48、可变形参,可以接受0个或者 多个指定值得参数，在形参类型后面加三个点...来编写可变形参,但是函数最多只有一个可变形参，如果函数已经有一个或者多个带有默认值的形参，并且还有可变形参，那么可变形参放在所有形参之后
+49、In-Out形参 变量形参只能在函数本身内改变。如果你想让函数改变形参值,并想要在函数调用结束后保持形参值的改变,那你可以把形参定义为in-out形参。
+50、闭包 闭包是功能性自包含代码块，可以在代码中传递和使用。闭包可以捕获和存储所在上下文中的任意变量和常量的引用。
+51、字典后面跟一个感叹号可以保证所查找的key不存在也可以不会查找失败。
+52、函数和闭包都是引用类型，无论您将函数/闭包赋值给一个常量还是变量,您实际上都是将常量/变量的值设置为对应函
+数/闭包的引用。
 */
 import UIKit
 
@@ -75,6 +80,7 @@ class ViewController: UIViewController {
         learnCapterTwo()
         learnCapterThree()
         learnFunctionChapter()
+        learnClosurcesChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -471,7 +477,6 @@ class ViewController: UIViewController {
        
     }
 
-    
     func learnCapterTwo()->Void{
         /****************************************基本运算符*****************************/
        //赋值运算
@@ -1094,7 +1099,134 @@ class ViewController: UIViewController {
         }
        let rightStr = alignRight("LeeRHuang", 11, "1")
         
+        //In-Out形参
+        func swapTwoInts(inout a: Int,inout b: Int){
+            let tempArrayA = a
+            a = b
+            b = tempArrayA
+        }
+        
+        var someInt = 2
+        var anotherInt = 3
+        swap(&someInt, &anotherInt)
+        println("someInt now is \(someInt)","another now is \(anotherInt)")
+        
+        //函数类型,都是同一种参数和返回值类型(int,int)->int,可以当做一种类型是看待
+        func addTwoInts(a: Int,b: Int)->Int{
+            return a+b
+        }
+        
+        func mutplierTwoInts(a :Int,b:Int)->Int{
+            return a*b
+        }
+        
+        //声明一个函数类型变量
+        var mathFunc: (Int,Int)->Int = addTwoInts
+        println("mathFunc is \(mathFunc(2,3))")
+        
+        mathFunc = mutplierTwoInts
+        println("mathFunc now is \(mathFunc(2,3))")
+        
+        //推断类型
+        let anotherMathFunc = addTwoInts
+        println("anotherMathFunc is \(anotherMathFunc(8,8))")
+        
+        //作为形参类型的函数类型
+        func printMathResult(mathFunc: (Int,Int)->Int,a: Int,b :Int){
+            println("printMathResult is \(mathFunc(a,b))")
+        }
+        printMathResult(mathFunc, 5, 6)
+        
+        //作为返回类型函数类型
+        func setpForWard(input: Int)->Int{
+            return input+1
+        }
+        func setpBackWard(input: Int)->Int{
+            return input-1
+        }
+        
+        func chooseStepFunction(backwards: Bool) -> (Int) -> Int {
+             return backwards ? setpBackWard : setpForWard
+        }
+        var currentVaule = 3
+        let tempFunc = chooseStepFunction(currentVaule > 0)
+        println("tempFunc is \(tempFunc)")
+        while currentVaule != 0{
+            println("\(currentVaule)")
+            currentVaule = tempFunc(currentVaule)
+        }
+        println("now is zero!")
+        
+        //嵌套函数
+        func chooseWhicOneToExece(flag: Bool) -> (Int) -> (Int){
+            func setpForWard(input: Int)->Int{
+                return input+1
+            }
+            func setpBackWard(input: Int)->Int{
+                return input-1
+            }
+            return flag ? setpBackWard : setpForWard
+        }
+        var value = 10
+        let moveToZero = chooseWhicOneToExece(value>9)
+        while value != 0{
+            println("vaule is \(value)")
+            value = moveToZero(value)
+        }
+        println("now is zero!")
+        
         
     }
+    /****************************************闭包*****************************/
+    //闭包是功能性自包含代码块，可以在代码中传递和使用。闭包可以捕获和存储所在上下文中的任意变量和常量的引用。
+    func learnClosurcesChapter(){
+        //闭包表达式{(表达式)->返回类型 in 执行语句}
+        
+        func compare(string1: String,string2: String)->Bool{
+            return string2 > string2
+        }
+        let array = ["Alex","Tom","Jerry","Lucy","Cabye"]
+//        var reversed = sort(array,compare)
+//        println("reversed is \(reversed)")
+        
+//       var reversed = sort(array, {(s1: String, s2: String) -> Bool in return s1
+//            > s2 })
+        
+        let digitNames = [
+            0: "Zero", 1: "One", 2: "Two", 3: "Three", 4: "Four",
+            5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"
+           ]
+        let numbers = [16, 58, 510]
+        let strings = numbers.map {
+            (var number) ->String in
+            var outPut = ""
+            while number > 0{
+            outPut = digitNames[number % 10]! + outPut
+            number /= 10
+            }
+            return outPut
+        }
+        
+        //捕获,捕获可以在其定义的上下文中捕获常量或者变量
+        func incrementor(forceIncrement amount: Int)->() ->Int{
+                var runningTotal = 0
+                func increment()->Int{
+                runningTotal += amount
+                return runningTotal
+                }
+               return increment
+        }
+        let increment = incrementor(forceIncrement: 10)
+        println("increment1 is \(increment())")//再次调用
+        println("increment2 is \(increment())")//再次调用
+        println("increment3 is \(increment())")//再次调用
+        let incrementNine = incrementor(forceIncrement: 9)
+        println("increment4 is \(incrementNine())")//再次调用
+        
+        //闭包引用 函数和闭包都是引用类型
+
+    }
+
+    /****************************************枚举*****************************/
 
 }

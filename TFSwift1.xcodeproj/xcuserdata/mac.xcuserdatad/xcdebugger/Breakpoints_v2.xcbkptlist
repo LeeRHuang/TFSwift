@@ -10,13 +10,43 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TFSwift1/ViewController.swift"
-            timestampString = "446526674.682657"
+            timestampString = "446543709.739415"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1096"
-            endingLineNumber = "1096"
-            landmarkName = "learnFunctionChapter()"
+            startingLineNumber = "1198"
+            endingLineNumber = "1198"
+            landmarkName = "learnClosurcesChapter()"
             landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TFSwift1.ViewController.(learnClosurcesChapter (TFSwift1.ViewController) -&gt; () -&gt; ()).(closure #1)"
+                  moduleName = "TFSwift1"
+                  urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
+                  timestampString = "446540059.741732"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1199"
+                  endingLineNumber = "1199"
+                  offsetFromSymbolStart = "42">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "reabstraction thunk helper from @callee_owned (@unowned Swift.Int) -&gt; (@owned Swift.String) to @callee_owned (@in Swift.Int) -&gt; (@out Swift.String)"
+                  moduleName = "TFSwift1"
+                  urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
+                  timestampString = "446540059.742166"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "1197"
+                  endingLineNumber = "1197"
+                  offsetFromSymbolStart = "11">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
