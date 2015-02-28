@@ -4,49 +4,55 @@
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = ""
+            moduleName = "">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            symbolName = "viewDidLoad"
+            moduleName = "">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "@objc TFSwift1.ViewController.viewDidLoad (TFSwift1.ViewController)() -&gt; ()"
+                  moduleName = "TFSwift1"
+                  urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
+                  timestampString = "446806898.562056"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "9">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TFSwift1/ViewController.swift"
-            timestampString = "446543709.739415"
+            timestampString = "446806652.588722"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1198"
-            endingLineNumber = "1198"
-            landmarkName = "learnClosurcesChapter()"
+            startingLineNumber = "1369"
+            endingLineNumber = "1369"
+            landmarkName = "learnClassAndStructChapter()"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TFSwift1.ViewController.(learnClosurcesChapter (TFSwift1.ViewController) -&gt; () -&gt; ()).(closure #1)"
-                  moduleName = "TFSwift1"
-                  urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
-                  timestampString = "446540059.741732"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1199"
-                  endingLineNumber = "1199"
-                  offsetFromSymbolStart = "42">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "reabstraction thunk helper from @callee_owned (@unowned Swift.Int) -&gt; (@owned Swift.String) to @callee_owned (@in Swift.Int) -&gt; (@out Swift.String)"
-                  moduleName = "TFSwift1"
-                  urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
-                  timestampString = "446540059.742166"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1197"
-                  endingLineNumber = "1197"
-                  offsetFromSymbolStart = "11">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
