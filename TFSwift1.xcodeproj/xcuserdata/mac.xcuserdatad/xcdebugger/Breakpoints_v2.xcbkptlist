@@ -29,12 +29,12 @@
                   symbolName = "@objc TFSwift1.ViewController.viewDidLoad (TFSwift1.ViewController)() -&gt; ()"
                   moduleName = "TFSwift1"
                   urlString = "file:///Users/mac/Desktop/Demo/Swift/TFSwift1/TFSwift1/ViewController.swift"
-                  timestampString = "446806898.562056"
+                  timestampString = "447144416.257202"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "0"
                   endingLineNumber = "0"
-                  offsetFromSymbolStart = "9">
+                  offsetFromSymbolStart = "4">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -46,12 +46,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TFSwift1/ViewController.swift"
-            timestampString = "446806652.588722"
+            timestampString = "447144350.888436"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1369"
-            endingLineNumber = "1369"
-            landmarkName = "learnClassAndStructChapter()"
+            startingLineNumber = "1550"
+            endingLineNumber = "1550"
+            landmarkName = "Icloud"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TFSwift1/ViewController.swift"
+            timestampString = "447144354.564752"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1556"
+            endingLineNumber = "1556"
+            landmarkName = "learnPropertyChapter()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -65,6 +65,18 @@ Tips:
 51、字典后面跟一个感叹号可以保证所查找的key不存在也可以不会查找失败。
 52、函数和闭包都是引用类型，无论您将函数/闭包赋值给一个常量还是变量,您实际上都是将常量/变量的值设置为对应函
 数/闭包的引用。
+53、枚举 枚举是定义了一个通用类型的一组相关的值,原始值可以是字符串,字符,或者任何整型值或浮点型值,当整型值被用于原始值,如果其他枚举成员没有值时,它们会自动递增。原始值,定义枚举时候预先填充的值，必须是同一种类型,长度类型必须一致
+54、枚举获取指定原始值枚举成员使用rawValue代替fromRaw，使用rawValue代替toRaw获取枚举成员原始值
+55、值类型被赋予给一个变量,常数或者本身被传递给一个函数的时候,实际上操作的是其的拷贝
+56、在 Swift 中,所有的基本类型:整数(Integer)、浮点数(floating-point)、布尔值(Booleans)、字符串(string)、数组(array)和字典(dictionaries),都是值类型,并且都是以结构体的形式在后台所实现。
+57、枚举和结构体都是值类型，被赋值给一个变量实际操作是其的拷贝
+58、//类是引用类型,和枚举、结构体是值类型不同，类被赋值给一个变量、常量或者当做一个函数参数传递时候不是传递它的拷贝，而是类的实例本身。
+59、集合类的赋值和拷贝 数组和字典都是以结构体形式实现的，是值类型，所以赋值或者传递给函数都会是传递他的一份拷贝。
+60、对数组来说,拷贝行为仅仅当操作有可能修改数组长度时才会发生。
+61、属性将值和类、结构体、枚举关联起来。分为存储属性和计算属性。存储属性只能够用于类和结构体，而计算属性可以用于类、结构体、枚举。属性也可以用于类型本身，称为类型属性。还可以定义属性监视器来监控属性值的变化,以此来触发一个自定义的操作。属性监 视器可以添加到自己写的存储属性上,也可以添加到从父类继承的属性上。
+62、由于结构体是值类型，当值类型的实例被声明为常量则所有属性都为常量，不能被修改，如果被声明为变量那么所有属性都为变量
+63、由于类是引用类型，当把引用类型实例赋值给一个常量时候，还是可以修改实例变量的属性。
+64、只读属性，只读属性指只能访问不能够修改值，会返回有个值。可以省略括号和get关键字
 */
 import UIKit
 
@@ -75,22 +87,20 @@ class ViewController: UIViewController {
         var testInstance =  TestClass()
         /*基本语法学习*/
         learnBaseSyntax()
-        practice()
         learnCapterOne()
         learnCapterTwo()
         learnCapterThree()
         learnFunctionChapter()
         learnClosurcesChapter()
+        learnEunmerChapter()
+        learnClassAndStructChapter()
+        learnPropertyChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
     }
     
-    func learnBaseSyntax(){
-
-    }
-    
-    func practice()->Void{
+    func learnBaseSyntax()->Void{
         //varible describle the value that can be changed in the future,the name that be modified by key word let only be assiged once
         /*******************************1、常量和变量********************************/
         var a = 1   //声明变量
@@ -457,7 +467,7 @@ class ViewController: UIViewController {
         println("error1 = \(error1)") //error1 = nil
         
         /****************************************隐式解析可选*****************************/
-        //concept:把想要用作可选类型的后面的问号(?)改成感叹号(!)来声明隐式解析
+        //concept:当可选被第一次赋值之后就可以确定之后一直有值的时候，把想要用作可选类型的后面的问号(?)改成感叹号(!)来声明隐式解析
         var name:String? = "Lee"
         println("name = \(name!)")
         var age:Int! = 25
@@ -467,6 +477,14 @@ class ViewController: UIViewController {
         if let myAge = age {
             println("myAge = \(myAge)")
         }
+        
+        //使用感叹号获取值
+        let possibleString: String? = "hello World"
+        println(possibleString!)
+        
+        //直接声明为隐式解析类型
+        let possibelStr: String! = "Yes I do"
+        println(possibelStr)
         
         /****************************************断言(assertion)*****************************/
         //concept:断言是判断一个条件是否为真，可以结束代码运行，如果条件判断为true那么继续执行，否则代码停止运行，应用被终止
@@ -1228,5 +1246,315 @@ class ViewController: UIViewController {
     }
 
     /****************************************枚举*****************************/
+    //枚举成员不会被隐式的定义一个整数值；多个成员在同一行可以使用逗号分隔；case关键字表面新的一行成员将要被定义；原始值是在定义枚举时候被预先填充的值，关联值是当基于枚举成员的新常量或者变量才会被设置，他们每次的
+    func learnEunmerChapter(){
+        enum Direction{
+            case East
+            case West
+            case south
+            case North
+        }
+        //declartion a variable to accept Direction's member
+        var direction = Direction.East
+        //assign vaule,when the variable's type is sure, ignor the Direction type
+        direction = .East
+        //match the right case
+        switch direction{
+        case .West:
+            println("West")
+        case .East:
+            println("East")
+        case .south:
+            println("South")
+        case .North:
+            println("North")
+        }
+        //in control strem statement,if match enum case,wo can't ignor anyone,otherwise,complie will error.
+        //if wo don't want to match each case,wo can use default statement to reprsent others cases.
+        enum Planet{
+            case Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Nepturn
+        }
+        
+        let somePlant = Planet.Mars
+        switch somePlant{
+        case .Mars:
+            println("it is Mars")
+        default :
+            println("others planets")
+        }
+        
+        //Associate values
+        enum BarCode{
+            case UPCA(Int,Int,Int)
+            case QRCode(String)
+        }
+        //assgin vaule to a variable
+        var productCode = BarCode.UPCA(2000, 200, 300)
+        var codeString = BarCode.QRCode("Right")
+        productCode = .UPCA(555,777,88)
+        codeString = .QRCode("ABCDEFJ")
+        
+        //use switch statement，可以使用var或者let在关联值前面声明
+        switch codeString{
+        case .UPCA(let a, let b, let c):
+            println("a,b,c is \(a),\(b),\(c)")
+        case .QRCode(var codeString):
+            println("codeSting is \(codeString)")
+        }
+        
+        //如果关联值都是变量或者常量，可以提取放在case语句前面
+        switch productCode{
+        case let .UPCA(code1,code2,code3):
+            println("code 1 is \(code1),code2 is \(code2),code3 is \(code3)")
+        case var .QRCode(string):
+            println("codeString is \(string)")
+        }
+        
+        //原始值,定义枚举时候预先填充的值，必须是同一种类型
+        enum NameList:Character{
+            case chineseName = "李"
+            case engilshNmae = "L"
+        }
+        
+        enum CarBrand:Int{
+            case Benz = 3,BMW,Toyota,Honda,Citroen
+        }
+        //使用rawVaule代替toRaw获取原始值
+        let carBrand = CarBrand.Benz.rawValue
+        //use rawValue to find excepted value
+        let thirdValue = CarBrand(rawValue: 1)
+        
+        //使用可选绑定检测没有匹配的
+        let possiableCar = 6
+        if let someCar = CarBrand(rawValue: possiableCar){
+            switch someCar{
+            case .Benz:
+                println("it's \(CarBrand.Benz)")
+            default:
+                println("other car brand")
+            }
+        }else{
+            println("there is not exist such car brand")
+        }
+    }
+    
+    /****************************************类和结构体*****************************/
+    //共同点
+    //定义属性用于提供储存值
+    //定义方法用于提供功能
+    //定义下标用于通过下标语法访问值
+    //定义初始化器用于生成初始化值
+    //通过扩展以增加默认实现的功能
+    //符合协议以对类提供标准功能
+    
+    //类其他的特点
+    //继承允许一个类继承另一个类的特征
+    //类型转换允许在运行时检查和解释一个类实例的类型
+    //取消初始化器允许一个类实例释放任何其所被分配的资源
+    //引用计数允许对一个类的多次引用
+    func learnClassAndStructChapter(){
+        //使用Class和Struct分别定义类和结构体
+        struct Car{
+          var price = 10
+          var oilCost = 30
+        }
+        
+        struct Food{
+          var fruit = true
+          var meet = "meet"
+        }
+        
+        class Animation{
+          var food = Food()
+          var head = true
+        }
+        //初始化类的实例和结构体实例，在相应的类和结构体后面跟一对括号
+        let car = Car()
+        let food = Food()
+        let animation = Animation()
+        //使用点语法访问变量
+        println("car price is \(car.price)")
+        println("animation food is \(animation.food.fruit)")
+        println("animation head is \(animation.head))")
+        
+        //￼值类型被赋予给一个变量,常数或者本身被传递给一个函数的时候,实际上操作的是其的拷贝
+        //结构体类型成员逐一初始化
+        struct resolution{
+            var width = 0
+            var heigt = 0
+        }
+        
+        let vga = resolution(width:800, heigt: 1024)
+        var hd = vga
+        hd.width = 1024
+        hd.heigt = 2048
+        println("hdWidth is \(hd.width) hdHeight is \(hd.heigt)")
+        println("vgaWidth is \(vga.width) vgaHeight is \(vga.heigt)")
+        //由此可见结构体实例是值类型，hd是vga的一份拷贝
+        
+        enum compassPoint{
+            case East,West,South,North
+        }
+        //使用一个变量接受枚举成员
+        var directionInstance = compassPoint.West
+        let tempDircetion = directionInstance
+        directionInstance = .East
+        if tempDircetion == .West{
+            println("tempDirection is \(tempDircetion),directionInstance is \(directionInstance)")
+        }
+        
+        //类是引用类型,和枚举、结构体是值类型不同，类被赋值给一个变量、常量或者当做一个函数参数传递时候不是传递它的拷贝，而是类的实例本身。
+        class Human{
+            var averageHight:Float = 0
+            var isWisdom:Bool = true
+            var amount:Double = 0
+            var lifeTime:Double = 0
+        }
+        let human = Human()
+        human.averageHight = 1.7
+        human.isWisdom = true
+        human.amount = 600000000000000
+        human.lifeTime = 68.5
+        
+        var tempHuman = human
+        tempHuman.averageHight = 1.8
+        //改变的是实例的参数值，实例并没有改变
+        println("\(human.averageHight)===\(tempHuman.averageHight)")
+        
+        //等价于(===),表示两个类型的常量或者变量引用同一个类实例
+        //等于(==)表示两个实例的值相等或者相同
+        if human === tempHuman{
+            println("it is reference the same class!")
+        }
+        
+        //集合类的赋值和拷贝 数组和字典都是以结构体形式实现的，是值类型，所以赋值或者传递给函数都会是传递他的一份拷贝。
+        var ages = ["Lee":25,"Zhang":20,"wang":30]
+        var tempAge = ages
+        ages["Lee"] = 30
+        tempAge["Lee"] = 26
+        println("ages is \(ages)___tempAge is \(tempAge)")
+        
+        var randomArrays = [1,5,7,8,21]
+        var a = randomArrays
+        var b = randomArrays
+        println("\(randomArrays[4])")
+        println("\(a[4])")
+        println("\(b[4])")
+        
+        randomArrays[4] = 10
+        println("\(randomArrays[4])")
+        println("\(a[4])")
+        println("\(b[4])")
+        
+        randomArrays.append(10)
+        println("\(randomArrays)")
+        println("\(a[4])")
+        println("\(b[4])")
+        
+        //数组的唯一性,通过在数组变量调用unshare方法确定数组的唯一性
+        //使用等于判断数组是否共用相同元素
+        if a == b{
+            println("b and c still share the same array elements.")
+        }else{
+            println("b and c now refer to two independent sets of array elements")
+        }
+        
+        if a[0...2] == b[0...2]{
+            println("These two subarrays share the same elements.")
+        }else{
+            println("These two subarrays do not share the same elements.")
+        }
+        
+        //调用copy显示的复制数组，是浅复制
 
+    }
+    
+    /****************************************属性*****************************/
+    //属性将值和类、结构体、枚举关联起来。分为存储属性和计算属性。存储属性只能够用于类和结构体，而计算属性可以用于类、结构体、枚举。属性也可以用于类型本身，称为类型属性。还可以定义属性监视器来监控属性值的变化,以此来触发一个自定义的操作。属性监 视器可以添加到自己写的存储属性上,也可以添加到从父类继承的属性上。
+    func learnPropertyChapter(){
+        //存储属性
+        struct TextRange{
+            var firstValue: Int
+            let height: Int
+        }
+        var rang1 = TextRange(firstValue: 10, height: 20)
+        //    rang1.firstValue = 2
+        //    textRang.width = 20
+        let rang2 = TextRange(firstValue: 10, height: 20)
+        
+        //由于结构体是值类型，当值类型的实例被声明为常量则所有属性都为常量，不能被修改，如果被声明为变量那么所有属性都为变量
+        //由于类是引用类型，当把引用类型实例赋值给一个常量时候，还是可以修改实例变量的属性。
+        
+        //延迟存储属性
+        //延迟存储属性是指只有第一次被访问时候才会创建的属性，在属性声明前使用@lazy表示，只能是变量类型，因为属性的值在实例生成之前可能无法获取到，而常量在构造完成之前必须要有初始值，无法声明为延迟属性。作用是可以减少一些没有必要的初始化。
+        class DataImport {
+            var fileName = "data.text"
+        }
+        
+        class DataManager {
+            lazy var imPorter = DataImport()
+            var data = [String]()
+        }
+        let ​manager​ = DataManager()
+        //计算属性，计算属性不存储值，而是提供一个getter方法获取值，一个可选的setter方法来间接设置其他值或者变量
+        //     struct Point {
+        //         var x = 0.0, y = 0.0
+        //         }
+        //     struct Size {
+        //         var width = 0.0,height = 0.0
+        //         }
+        //
+        //     struct Rect {
+        //         var origin = Point()
+        //         var size = Size()
+        //         var center: Point {
+        //        get{
+        //        let centerX = origin.x + (size.width / 2)
+        //        let centerY = origin.y + (size.height / 2)
+        //
+        //            }
+        //         set(newCenter) {
+        //         origin.x = newCenter.x - (size.width / 2)
+        //         origin.y = newCenter.y - (size.height / 2)
+        //         }
+        //        }
+        //    }
+        //    var point = Point(x: 10, y: 10)
+        //    var size = Size(width: 20, height: 20)
+        //    var rect = Rect(origin: Point, size: Size)
+        
+        //    let  square = Rect(origin: Point(x: 0.0, y: 0.0), 23. size: Size(width: 10.0, height: 10.0))
+        //    let initialSquareCenter = square.center
+        //    square.center = Point(x: 15.0, y: 15.0)
+        //    println("square.origin is now at (\(square.origin.x), \(square.origin.
+        //    y))")
+        // 输出 "square.origin is now at (10.0, 10.0)”
+        
+        //    struct AlertNativeRect {
+        //     var point = Point()
+        //     var size = Size()
+        //        var center :Point{
+        //            get{
+        //            let centerX = point.x+size.width/2
+        //            let centerY = point.y+size.height/2
+        //            return Point(x: centerX, y: centerY)
+        //            }
+        //            set{
+        //              point.x = newValue.x-size.width/2
+        //              point.y = newValue.y-size.height/2
+        //            }
+        //        }
+        //    }
+        //只读属性，只读属性指只能访问不能够修改值，会返回有个值。可以省略括号和get关键字
+        struct Icloud{
+            var width = 0.0,height = 0.0,depth = 0.0
+            var volume:Double{
+                return width*height*depth
+            }
+        }
+        
+        let icloud = Icloud(width: 10, height: 20, depth: 30)
+        println("icloud is \(icloud.width)")
+    }
+  
 }
