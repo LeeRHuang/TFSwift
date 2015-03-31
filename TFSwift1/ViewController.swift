@@ -77,9 +77,14 @@ Tips:
 62、由于结构体是值类型，当值类型的实例被声明为常量则所有属性都为常量，不能被修改，如果被声明为变量那么所有属性都为变量
 63、由于类是引用类型，当把引用类型实例赋值给一个常量时候，还是可以修改实例变量的属性。
 64、只读属性，只读属性指只能访问不能够修改值，会返回有个值。可以省略括号和get关键字
-65、属性监视器，属性监视器监控和响应属性值的变化,每次属性被设置值的时候都会调用属性监视器，willSet 在设置新的值之前调用，didSet 在新的值被设置之后立即调用
+65、属性监视器，属性监视器监控和响应属性值的变化,每次属性被设置值的时候都会调用属性监视器，willSet 在设置新的值之前调用，didSet 在新的值被设置之后立即调用，可以为除了延迟存储属性之外的其他存储属性添加属性监视器
 66、全局的常量或变量都是延迟计算的,跟延迟存储属性相似,不同的地方在于,全局的常量或变量不需要标记@lazy 特性;局部范围的常量或变量不会延迟计算
 67、1、实例的属性属于一个特定类型实例,每次类型实例化后都拥有自己的一套属性值,实例之间 的属性相互独立 2、也可以为类型本身定义属性,不管类型有多少个实例,这些属性都只有唯一一份。这种属性 就是类型属性。3、对于值类型(指结构体和枚举)可以定义存储型和计算型类型属性,对于类(class)则只能 定义计算型类型属性。
+68、值类型是什么类型，那么它的属性也就变成什么类型，引用性类的实例赋给一个常量，还是可以修改实例的变量属性。
+69、计算属性不直接存储值,而是提供一个 getter 来获取值,一个可选的 setter 来间接设置其他属性或变量的值
+70、必须使用 var 关键字定义计算属性,包括只读计算属性,因为他们的值不是固定的。let 关键字只用来声明常量属性,表示初始化后再也无法修改的值。
+71、只读计算属性的声明可以去掉get关键字和花括号
+
 */
 import UIKit
 
@@ -1586,6 +1591,7 @@ class ViewController: UIViewController {
         //使用关键字 static 来定义值类型的类型属性,关键字 class 来为类(class)定义类型属性
         
         //跟实例的属性一样,类型属性的访问也是通过点运算符来进行,但是,类型属性是通过类型本身来获取和设置,而不是通过实例
+
         struct someStruct{
             static var storedTypeProperty = "Some value"
             static var computedTypeProperty: Int{
@@ -1595,12 +1601,49 @@ class ViewController: UIViewController {
         
         enum someEnum{
             static var storeTypeProperty = "some enum"
-            static var computedTypePro
+            static var computedTypeProperty: Int{
+                return 11
+            }
         }
         
         class someClass{
-            
+            class var computedTypeProperty: Int{
+                return 12
+            }
         }
+        
+        
+        println("someStruct.storedTypeProperty == \(someStruct.storedTypeProperty)");
+        println("someStruct.computedTypeProperty == \(someStruct.computedTypeProperty)")
+        println("someEnum.storeTypeProperty == \(someEnum.storeTypeProperty)")
+        println("someEnum.computedTypeProperty \(someEnum.computedTypeProperty)")
+        println("someClass.computedTypeProperty == \(someClass.computedTypeProperty)")
+        
+        struct AudioChannle{
+            static let thresholdLevel = 10 //声明类型属性常量
+            static var maxInputLevelForAllChannels = 0 //声明类型属性变量
+            var currentLeavel: Int = 0{
+                didSet{//属性监视器
+                    if currentLeavel > AudioChannle.thresholdLevel{
+                        //设置新值
+                        currentLeavel = AudioChannle.thresholdLevel
+                    }
+                    if currentLeavel > AudioChannle.maxInputLevelForAllChannels{
+                        AudioChannle.maxInputLevelForAllChannels = currentLeavel
+                    }
+                }
+            }
+        }
+        
+        var leftChannle = AudioChannle()
+        leftChannle.currentLeavel = 11//didSet只会调用一次
+        println("currentLeavel == \(leftChannle.currentLeavel)")
+        println("AudioChannle.maxInputLevelForAllChannels == \(AudioChannle.maxInputLevelForAllChannels)")
+        
+        var rightChannle = AudioChannle()
+        rightChannle.currentLeavel = 9
+        println("currentLeavel2 == \(leftChannle.currentLeavel)")
+        println("AudioChannle.maxInputLevelForAllChannels2 == \(AudioChannle.maxInputLevelForAllChannels)")
     }
   
 }
