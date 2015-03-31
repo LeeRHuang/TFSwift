@@ -77,6 +77,9 @@ Tips:
 62、由于结构体是值类型，当值类型的实例被声明为常量则所有属性都为常量，不能被修改，如果被声明为变量那么所有属性都为变量
 63、由于类是引用类型，当把引用类型实例赋值给一个常量时候，还是可以修改实例变量的属性。
 64、只读属性，只读属性指只能访问不能够修改值，会返回有个值。可以省略括号和get关键字
+65、属性监视器，属性监视器监控和响应属性值的变化,每次属性被设置值的时候都会调用属性监视器，willSet 在设置新的值之前调用，didSet 在新的值被设置之后立即调用
+66、全局的常量或变量都是延迟计算的,跟延迟存储属性相似,不同的地方在于,全局的常量或变量不需要标记@lazy 特性;局部范围的常量或变量不会延迟计算
+67、1、实例的属性属于一个特定类型实例,每次类型实例化后都拥有自己的一套属性值,实例之间 的属性相互独立 2、也可以为类型本身定义属性,不管类型有多少个实例,这些属性都只有唯一一份。这种属性 就是类型属性。3、对于值类型(指结构体和枚举)可以定义存储型和计算型类型属性,对于类(class)则只能 定义计算型类型属性。
 */
 import UIKit
 
@@ -1497,54 +1500,52 @@ class ViewController: UIViewController {
         }
         let ​manager​ = DataManager()
         //计算属性，计算属性不存储值，而是提供一个getter方法获取值，一个可选的setter方法来间接设置其他值或者变量
-        //     struct Point {
-        //         var x = 0.0, y = 0.0
-        //         }
-        //     struct Size {
-        //         var width = 0.0,height = 0.0
-        //         }
-        //
-        //     struct Rect {
-        //         var origin = Point()
-        //         var size = Size()
-        //         var center: Point {
-        //        get{
-        //        let centerX = origin.x + (size.width / 2)
-        //        let centerY = origin.y + (size.height / 2)
-        //
-        //            }
-        //         set(newCenter) {
-        //         origin.x = newCenter.x - (size.width / 2)
-        //         origin.y = newCenter.y - (size.height / 2)
-        //         }
-        //        }
-        //    }
-        //    var point = Point(x: 10, y: 10)
-        //    var size = Size(width: 20, height: 20)
-        //    var rect = Rect(origin: Point, size: Size)
+             /*struct Point {
+                 var x = 0.0, y = 0.0
+                 }
+             struct Size {
+                 var width = 0.0,height = 0.0
+                 }
         
-        //    let  square = Rect(origin: Point(x: 0.0, y: 0.0), 23. size: Size(width: 10.0, height: 10.0))
-        //    let initialSquareCenter = square.center
-        //    square.center = Point(x: 15.0, y: 15.0)
-        //    println("square.origin is now at (\(square.origin.x), \(square.origin.
-        //    y))")
+             struct Rect {
+                 var origin = Point()
+                 var size = Size()
+                 var center: Point {
+                get{
+                let centerX = origin.x + (size.width / 2)
+                let centerY = origin.y + (size.height / 2)
+                    }
+                 set(newCenter) {
+                 origin.x = newCenter.x - (size.width / 2)
+                 origin.y = newCenter.y - (size.height / 2)
+                 }
+                }
+            }
+            var point = Point(x: 10, y: 10)
+            var size = Size(width: 20, height: 20)
+            var rect = Rect(origin: Point(), size: Size())
+        
+            let  square = Rect(origin: Point(x: 0.0, y: 0.0), size: Size(width: 10.0, height: 10.0))
+            let initialSquareCenter = square.center
+            square.center.x = 15.0
+            println("square.origin is now at \(square.origin.x), \(square.origin.y)")
         // 输出 "square.origin is now at (10.0, 10.0)”
         
-        //    struct AlertNativeRect {
-        //     var point = Point()
-        //     var size = Size()
-        //        var center :Point{
-        //            get{
-        //            let centerX = point.x+size.width/2
-        //            let centerY = point.y+size.height/2
-        //            return Point(x: centerX, y: centerY)
-        //            }
-        //            set{
-        //              point.x = newValue.x-size.width/2
-        //              point.y = newValue.y-size.height/2
-        //            }
-        //        }
-        //    }
+            struct AlertNativeRect {
+             var point = Point()
+             var size = Size()
+                var center :Point{
+                    get{
+                    let centerX = point.x+size.width/2
+                    let centerY = point.y+size.height/2
+                    return Point(x: centerX, y: centerY)
+                    }
+                    set{
+                      point.x = newValue.x-size.width/2
+                      point.y = newValue.y-size.height/2
+                    }
+                }
+            }*/
         //只读属性，只读属性指只能访问不能够修改值，会返回有个值。可以省略括号和get关键字
         struct Icloud{
             var width = 0.0,height = 0.0,depth = 0.0
@@ -1555,6 +1556,51 @@ class ViewController: UIViewController {
         
         let icloud = Icloud(width: 10, height: 20, depth: 30)
         println("icloud is \(icloud.width)")
+        
+        //属性监视器，属性监视器监控和响应属性值的变化,每次属性被设置值的时候都会调用属性监视器
+        //willSet 在设置新的值之前调用
+        //didSet 在新的值被设置之后立即调用
+        
+        class StepCounter{
+            var totalSteps :Int = 0 {
+                willSet(newTotalSteps){
+                    println("newSteps to \(newTotalSteps)")
+                }
+                
+                didSet{
+                    if totalSteps > oldValue{
+                        println("added \(totalSteps - oldValue) steps");
+                    }
+                }
+            }
+        }
+        
+        let stepCounter = StepCounter()
+        stepCounter.totalSteps = 100
+        stepCounter.totalSteps = 200
+        stepCounter.totalSteps = 300
+        
+        //全局的常量或变量都是延迟计算的,跟延迟存储属性相似,不同的地方在于,全局的常量或变量不需要标记@lazy 特性;局部范围的常量或变量不会延迟计算
+        //1、实例的属性属于一个特定类型实例,每次类型实例化后都拥有自己的一套属性值,实例之间 的属性相互独立 2、也可以为类型本身定义属性,不管类型有多少个实例,这些属性都只有唯一一份。这种属性 就是类型属性。3、对于值类型(指结构体和枚举)可以定义存储型和计算型类型属性,对于类(class)则只能 定义计算型类型属性。
+        
+        //使用关键字 static 来定义值类型的类型属性,关键字 class 来为类(class)定义类型属性
+        
+        //跟实例的属性一样,类型属性的访问也是通过点运算符来进行,但是,类型属性是通过类型本身来获取和设置,而不是通过实例
+        struct someStruct{
+            static var storedTypeProperty = "Some value"
+            static var computedTypeProperty: Int{
+                return 10
+            }
+        }
+        
+        enum someEnum{
+            static var storeTypeProperty = "some enum"
+            static var computedTypePro
+        }
+        
+        class someClass{
+            
+        }
     }
   
 }
