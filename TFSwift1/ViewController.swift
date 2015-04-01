@@ -90,7 +90,8 @@ Tips:
 75、类型的每一个实例都有一个隐含属性叫做 self,self 完全等同于该实例本身,实例方法的某个参数名称与实例的某个属性名称相同的时候，这个时候需要通过self属性区分参数名称和属性名称
 76、类型的每一个实例都有一个隐含属性叫做 self,self完全等同于该实例本身,实例方法的某个参数名称与实例的某个属性名称相同的时候,参数名称享有优先权,这个时候需要通过self属性区分参数名称和属性名称
 77、枚举的变异方法可以把 self 设置为相同的枚举类型中不同的成员
-78、声明类的类型方法,在方法的 func 关键字之前加上关键字 class;声明结构 体和枚举的类型方法,在方法的 func 关键字之前加上关键字 static
+78、声明类的类型方法,在方法的func关键字之前加上关键字 class;声明结构 体和枚举的类型方法,在方法的 func 关键字之前加上关键字static
+79、可以定义在类(Class)、结构体(structure)和枚举(enumeration)这些目标中,可以认为是访问对象、集合或序列的快捷方式,不需要再调用实例的特定的赋值和访问方法。
 */
 import UIKit
 
@@ -110,6 +111,7 @@ class ViewController: UIViewController {
         learnClassAndStructChapter()
         learnPropertyChapter()
         learnMethodChapter()
+        learnSubScript()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -1838,6 +1840,25 @@ class ViewController: UIViewController {
     }
     
     /****************************************附属脚本*****************************/
-    //
-
+    //可以定义在类(Class)、结构体(structure)和枚举(enumeration)这些目标中,可以认为是访问对象、集合或序列的快捷方式,不需要再调用实例的特定的赋值和访问方法。
+    func learnSubScript(){
+        struct TimesTable{
+            let multerPlier: Int
+            subscript(index: Int)->Int{//
+                get{
+                return multerPlier*index //只读
+                }
+                set(newValue){
+                    var a = 0
+                    a = newValue //newValue 的类型必须和附属脚本定义的返回类型相同
+                    println("newValue is == \(a)")//不走
+                }
+            }
+        }
+        var timesTable = TimesTable(multerPlier: 10)
+        println("timesTable index six == \(timesTable[3])")
+        
+        var numbersOfLegs = ["cats":4,"dog":4,"spirds":8]
+        numbersOfLegs["birds"] = 2
+    }
 }
