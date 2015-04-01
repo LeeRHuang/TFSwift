@@ -84,7 +84,13 @@ Tips:
 69、计算属性不直接存储值,而是提供一个 getter 来获取值,一个可选的 setter 来间接设置其他属性或变量的值
 70、必须使用 var 关键字定义计算属性,包括只读计算属性,因为他们的值不是固定的。let 关键字只用来声明常量属性,表示初始化后再也无法修改的值。
 71、只读计算属性的声明可以去掉get关键字和花括号
-
+72、结构体和枚举能够定义方法是 Swift 与 C/Objective-C 的主要区别之一。在 Objective-C 中,类是唯一能定义方法的类型。但在 Swift 中,你不仅能选择是否要定义一个类/结构体/枚举,还能灵活的在你创建的类型(类/结构体/枚举)上定义方法
+73、实例方法要写在它所属的类型的前后大括号之间。实例方法能够隐式访问它所属类型的所有的其他实例方法和属性。实例方法只能被它所属的类的提供个特定实例调用。实例方法不能脱离于现存的实例而被调用。
+74、因为方法就是函数,只是这个函数与这个类型相关联了
+75、类型的每一个实例都有一个隐含属性叫做 self,self 完全等同于该实例本身,实例方法的某个参数名称与实例的某个属性名称相同的时候，这个时候需要通过self属性区分参数名称和属性名称
+76、类型的每一个实例都有一个隐含属性叫做 self,self完全等同于该实例本身,实例方法的某个参数名称与实例的某个属性名称相同的时候,参数名称享有优先权,这个时候需要通过self属性区分参数名称和属性名称
+77、枚举的变异方法可以把 self 设置为相同的枚举类型中不同的成员
+78、声明类的类型方法,在方法的 func 关键字之前加上关键字 class;声明结构 体和枚举的类型方法,在方法的 func 关键字之前加上关键字 static
 */
 import UIKit
 
@@ -103,6 +109,7 @@ class ViewController: UIViewController {
         learnEunmerChapter()
         learnClassAndStructChapter()
         learnPropertyChapter()
+        learnMethodChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -1638,12 +1645,199 @@ class ViewController: UIViewController {
         var leftChannle = AudioChannle()
         leftChannle.currentLeavel = 11//didSet只会调用一次
         println("currentLeavel == \(leftChannle.currentLeavel)")
-        println("AudioChannle.maxInputLevelForAllChannels == \(AudioChannle.maxInputLevelForAllChannels)")
+        println("AudioChannle.maxInputLevelForAllChannels == \(AudioChannle.maxInputLevelForAllChannels)")//输出类型属性
         
         var rightChannle = AudioChannle()
         rightChannle.currentLeavel = 9
         println("currentLeavel2 == \(leftChannle.currentLeavel)")
-        println("AudioChannle.maxInputLevelForAllChannels2 == \(AudioChannle.maxInputLevelForAllChannels)")
+        println("AudioChannle.maxInputLevelForAllChannels2 == \(AudioChannle.maxInputLevelForAllChannels)")//currentLeavel值不会变
     }
-  
+    
+    /****************************************方法*****************************/
+    //结构体和枚举能够定义方法是 Swift 与 C/Objective-C 的主要区别之一。在 Objective-C 中,类是唯一能定义方法的类型。但在 Swift 中,你不仅能选择是否要定义一个类/结构体/枚举,还能灵活的在你创建的类型(类/结构体/枚举)上定义方法
+    func learnMethodChapter(){
+        
+        class Counter{
+            var temp = 0
+            func pluse(){
+                temp++;
+                self.temp++
+            }
+            
+            func miuns(amount:Int)->Int{
+                temp -= amount
+                return temp
+            }
+            
+            func reset(){
+                temp = 0
+            }
+            
+            func caculateSpaceBy(width: Int,length: Int,height: Int)()->Int{
+                var appendVar = 0
+                appendVar = width*length*height
+                return appendVar
+            }
+            func caculateValue(a: Double,_: Double,_: Double)()->Double{//缺省
+                return a
+            }
+        }
+        
+        var counter = Counter()
+        counter.pluse()
+        println("counter.temp1 === \(counter.temp)");
+        counter.miuns(10)
+        println("counter.temp2 === \(counter.temp)")
+        counter.reset()
+        println("counter.temp3 === \(counter.temp)")
+        
+        //因为方法就是函数,只是这个函数与这个类型相关联了
+       let space = counter.caculateSpaceBy(10, length: 20, height: 30)
+        println("space == \(space)")
+        var value = counter.caculateValue(2, 1,1 )
+        println("vaule == \(value)")
+        
+        //类型的每一个实例都有一个隐含属性叫做 self,self完全等同于该实例本身,实例方法的某个参数名称与实例的某个属性名称相同的时候,参数名称享有优先权,这个时候需要通过self属性区分参数名称和属性名称
+        class distinguishClass{
+            var x = 100
+            func addFunc(x: Int,y: Int)()->Bool{
+                if self.x > x{
+                    return true
+                }else{
+                    return false
+                }
+            }
+        }
+        
+        var distinguish = distinguishClass()
+        let success = distinguish.addFunc(10, y: 0)
+        println("success is \(success)")
+        
+        //结构体和枚举是值类型。一般情况下,值类型的属性不能在它的实例方法中被修改,如果需要需改值属性，那么可以在方法前面加上mutating关键字，然后方法就可以从方法内部改变它的属性;并且它做的任何改变在方法结束时还会保留在原始结构中。方法还可以给它隐含的 self 属性赋值一个全新的实例,这 个新实例在方法结束后将替换原来的实例。
+        
+        struct Point{
+            var x = 0.0,y = 0.0
+            mutating func moveByY(deltX: Double,y deltY: Double)->Double{
+//                x += deltX
+//                y += deltY
+//                return x*y
+                self = Point(x: x+deltX, y: y+deltY)
+                return x*y
+            }
+        }
+        
+        var point = Point(x: 5, y: 6)
+        var vaule = point.moveByY(2, y: 4)
+        println("vaule == \(vaule)")
+        
+        //枚举的变异方法可以把 self 设置为相同的枚举类型中不同的成员
+        enum lampSwitch{
+            case off,low,high
+            mutating func changeToNext(){
+                switch self{
+                case off:
+                    self = low
+                case low:
+                    self = high
+                case high:
+                    self = off
+                }
+            }
+        }
+        var low = lampSwitch.off//使用一个值初始化
+        
+        low.changeToNext()
+        low.changeToNext()
+        println("low == \(low)")
+        
+        //类型方法(对应oc类方法)
+        //声明类的类型方法,在方法的 func 关键字之前加上关键字 class;声明结构 体和枚举的类型方法,在方法的 func 关键字之前加上关键字 static
+        //结构体和枚举类型方法、
+        //类的类型方法
+        class SomeClass{
+            class func someTypeMethod(){
+                println("hello everybody!")
+            }
+        }
+        SomeClass.someTypeMethod()
+        
+        struct someStruct{
+            static var a = 10
+            static func test1(){
+             println("a === \(self.a),self is === \(self)")
+            }
+        }
+        someStruct.test1()
+        
+        enum someEnum{
+            static var b = 11.0
+            static func test2(){
+                println("b === \(self.b),self is === \(self)")
+            }
+            //使用self来消除静态属性和静态方法参数之间的歧义
+            static func test4(a: Double,b: Double){
+                if self.b > b{
+                    println("\(self.b) 大于, \(b)")
+                    self.test2()//一个类型方法可以调用该类型中的另一个类型方法，并且不需要在前面加上该类型前缀
+                }
+            }
+        }
+        someEnum.test2()
+        someEnum.test4(10, b: 10)
+        
+        //示例
+        struct LevelTracker{
+            static var highLockLeveal = 0
+            static func unLockLeveal(level: Int){
+                if level > highLockLeveal{
+                    highLockLeveal = level
+                }
+            }
+            
+            static func isUnLockLeveal(level: Int)->Bool{
+                //访问静态属性变量highLockLeveal
+                return level <= highLockLeveal
+            }
+            var currentLevel = 1
+            //修改值类型属性
+            mutating  func advanceLevel(level: Int)->Bool{
+                if LevelTracker.isUnLockLeveal(level){
+                    return true
+                }else{
+                    return false
+                }
+            }
+        }
+        
+        //声明一个类来调用
+        class Player {
+            var tracker = LevelTracker()
+            let playerName: String
+            func completedLevel(level: Int) {
+                LevelTracker.unLockLeveal(level)
+                tracker.advanceLevel(level+1)
+            }
+            init(name: String) {
+                playerName = name
+            }
+        }
+        //声明一个类实例
+        var player = Player(name: "Agyrios")
+        player.completedLevel(11)
+        println("highLockLevel is \(LevelTracker.highLockLeveal)")
+        println("LevelTracker.highLockLeveal is \(LevelTracker.highLockLeveal)")
+        
+        player = Player(name: "test")
+        player.completedLevel(2)
+        if player.tracker.advanceLevel(8){
+            println("highLockLevel is \(LevelTracker.highLockLeveal)")
+            println("LevelTracker.highLockLeveal is \(LevelTracker.highLockLeveal)")
+        }else{
+            print("level 6 has been locked!")
+        }
+    }
+    
+    /****************************************附属脚本*****************************/
+    //
+
 }
