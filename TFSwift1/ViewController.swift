@@ -92,6 +92,9 @@ Tips:
 77、枚举的变异方法可以把 self 设置为相同的枚举类型中不同的成员
 78、声明类的类型方法,在方法的func关键字之前加上关键字 class;声明结构 体和枚举的类型方法,在方法的 func 关键字之前加上关键字static
 79、可以定义在类(Class)、结构体(structure)和枚举(enumeration)这些目标中,可以认为是访问对象、集合或序列的快捷方式,不需要再调用实例的特定的赋值和访问方法。
+80、一个类可以继承另一个类的方法，属性，和其他特性，类可以调用和访问超类的方法，属性，附属脚本，并且可以重写这些方法，还可以为继承来的属性添加属性观察器。
+81、初始化器默认是不继承的，一个类的实例方法会被这个类的所有子类继承
+82、override 关键字会提醒Swift编译器去检查该类的超类(或其中一个父类)是否有匹配重写版本的声明。这个检查可以确保你的重写定义是正确的。
 */
 import UIKit
 
@@ -112,6 +115,7 @@ class ViewController: UIViewController {
         learnPropertyChapter()
         learnMethodChapter()
         learnSubScript()
+        learnInheritChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -1860,5 +1864,105 @@ class ViewController: UIViewController {
         
         var numbersOfLegs = ["cats":4,"dog":4,"spirds":8]
         numbersOfLegs["birds"] = 2
+        
+        struct Matrix{
+            let rows: Int,column: Int
+            //声明一个数组变量
+            var grid: [Double]
+            //初始化
+            init(rows: Int,column: Int){
+              self.rows = rows
+              self.column = column
+            grid = Array(count: rows * column, repeatedValue: 0)//初始化数组
+            }
+            //声明方法
+            func indexIsVaildForRow(row: Int,colunm: Int)-> Bool{
+                return row >= 0 && row < rows && column >= 0 && column < column
+            }
+            //脚本
+            subscript(row: Int,column: Int)-> Double{
+                get{
+                    assert(indexIsVaildForRow(row, colunm: column),"index is out rang")
+                    return grid[(row * column)+column]
+                }
+                set{
+//                    assert(indexIsVaildForRow(row, colunm: column), "index out of rang")
+                    grid[(row * column)+column] = newValue
+                }
+            }
+        }
+        
+        var matrix = Matrix(rows: 2, column: 2)
+        println("matrix is ==\(matrix)")
+        matrix[0,1] = 1.5
+        matrix[1,0] = 2.0
+        println("grid ==  \(matrix.grid)")
+    }
+    
+    /****************************************继承*****************************/
+    //一个类可以继承另一个类的方法，属性，和其他特性，类可以调用和访问超类的方法，属性，附属脚本，并且可以重写这些方法，还可以为继承来的属性添加属性观察器。初始化器默认是不继承的。
+    
+    func learnInheritChapter(){
+        //声明一个类
+        class Vehicle{
+            var numberOfWheels: Int
+            var maxPassengers: Int
+            func description()->String{
+                return "\(numberOfWheels) wheels ,\(maxPassengers) passengers limited!"
+            }
+            //初始化构造方法
+            init(){
+                numberOfWheels = 0
+                maxPassengers = 1
+            }
+        }
+        
+        let vehicle = Vehicle()
+        
+        //声明一个继承自Vehicle的子类
+        class Bicycle: Vehicle {
+            //复写初始化init方法,init方法默认不是继承
+            override init(){
+                super.init()
+                numberOfWheels = 2
+            }
+            func ride(){
+                println("have \(numberOfWheels) wheels,can ride!")
+            }
+        }
+        //声明一个实例
+        let bicycle = Bicycle()
+        println("description is === \(bicycle.description())")
+        println("=== \(bicycle.ride())")
+        //子类只允许修改从超类继承来的变量属性,而不能修改继承来的常量属性。但是一个类的实例方法会被这个类的所有子类继 承
+        
+        //再次继承
+        class Tandam: Bicycle{
+           override init() {
+                super.init()
+                maxPassengers = 2
+            }
+        }
+        
+        let tandam = Tandam()
+        println("tandam description === \(tandam.description())")
+        
+        //重写重载，继承自父类的实例方法，类方法，属性，附属脚本，达到自己需要的实现，称为重载。
+        //override 关键字会提醒 Swift 编译器去检查该类的超类(或其中一个父类)是否有匹配重写版本的声明。这个检查可以确保你的重写定义是正确的。
+        //重载方法
+        class Car: Bicycle{
+            var speed: Double = 100.0
+           override init(){
+                super.init()
+                maxPassengers = 5
+                numberOfWheels = 4
+            }
+            private override func description() -> String {
+                return super.description() + "," + "running at \(speed) km/h"
+            }
+        }
+        
+        let car = Car()
+        println("car description === \(car.description())")
     }
 }
