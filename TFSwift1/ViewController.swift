@@ -1859,6 +1859,32 @@ class ViewController: UIViewController {
         println("timesTable index six == \(timesTable[3])")
         
         var numbersOfLegs = ["cats":4,"dog":4,"spirds":8]
-        numbersOfLegs["birds"] = 2
+        numbersOfLegs["birds"] = 2//替换第二个
+        println("numbersOfLegs is == \(numbersOfLegs)");
+        
+        struct Matrix{
+            let rows = 0,columns = 0
+            var grid: [Double]
+            init(rows: Int,columns: Int){
+                self.rows = rows
+                self.columns = columns
+                grid = Array(count: rows*columns, repeatedValue: 0)
+            }
+            
+            func indexVaildForRow(row: Int,columns: Int)->Bool{
+                return row >= 0 && row < rows && columns >= 0 && columns < columns
+            }
+            
+            subscript(row: Int,colnums: Int)->Double{
+            get{
+            return grid[rows * columns]
+            }
+                
+                set{
+                    
+                }
+            }
+        
+        }
     }
 }
