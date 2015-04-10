@@ -101,6 +101,9 @@ Tips:
 86、只要构造器定义了某个外部参数名,你就必须使用它,忽略它将导致编译错误
 87、可选属性类型,可选类型的属性将自动初始化为空 nil,表示这个属性是故意在初始化时 设置为空的
 88、对某个类实例来说,它的常量属性只能在定义它的类的构造过程中修改，不能在子类中修改
+89、值类型构造代理，￼构造器可以通过调用其它构造器来完成实例的部分构造过程。这一过程称为构造器代理,它能减少多个构造器间的代码重复，值类型没有继承。
+90、类里面的所有存储型属性--包括所有继承自父类的属性--都必须在构造过程中设置初始值。
+91、跟Objective-C 中的子类不同,Swift 中的子类不会默认继承父类的构造器。Swift的这种机制可以防止一个父类的简单构造器被一个更专业的子类继承,并被错误的用来创建子类的实例
 */
 import UIKit
 
@@ -2106,9 +2109,54 @@ class ViewController: UIViewController {
         renter.passgers = 4
         
         //Swift将为所有属性已提供默认值的且自身没有定义任何构造器的结构体或基类,提供一个默认的构造器
-//        class ShoppingList{
-//            var name: String
-//            var price: Double
-//        }
+        class ShoppingList{
+            var name: String?
+            var purchsed = false
+            var quality = 1
+            
+            init(){
+                
+            }
+        }
+        var shop = ShoppingList()
+        
+        
+        //属性有默认值，自动获得初始化方法
+        struct Size{
+            var width = 0.0,height = 0.0
+        }
+        var size = Size(width: 10, height: 10)
+        
+        //值类型构造代理，￼构造器可以通过调用其它构造器来完成实例的部分构造过程。这一过程称为构造器代理,它能减少多个构造器间的代码重复，值类型没有继承。
+        struct Point{
+            var x = 0.0,y = 0.0
+        }
+
+        struct Rect{
+            var size = Size()
+            var point = Point()
+            init(){
+                
+            }
+            
+            //自定义构造方法
+            init(center: Point,size: Size){
+                self.size = size
+                self.point = center
+            }
+            
+            //代理构造
+            init(origin: Point,size: Size){
+                //提前
+                self.init(center: Point(x: 20, y: 20),size: Size(width: 30, height: 30))
+                self.point = origin
+                self.size = size
+            }
+        }
+        
+        //类的继承和构造过程
+        //类里面的所有存储型属性--包括所有继承自父类的属性--都必须在构造过程中设置初始值。
+        //跟Objective-C 中的子类不同,Swift 中的子类不会默认继承父类的构造器。Swift的这种机制可以防止一个父类的简单构造器被一个更专业的子类继承,并被错误的用来创建子类的实例
+        
     }
 }
