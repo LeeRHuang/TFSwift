@@ -95,6 +95,12 @@ Tips:
 80、一个类可以继承另一个类的方法，属性，和其他特性，类可以调用和访问超类的方法，属性，附属脚本，并且可以重写这些方法，还可以为继承来的属性添加属性观察器。
 81、初始化器默认是不继承的，一个类的实例方法会被这个类的所有子类继承
 82、override 关键字会提醒Swift编译器去检查该类的超类(或其中一个父类)是否有匹配重写版本的声明。这个检查可以确保你的重写定义是正确的。
+83、重写属性，可以复写setter和getter方法，但是不能只复写setter方法而不复写getter方法，也不能将一个属性复写只读属性
+84、复写属性观察器,可以为继承来的属性添加一个观察器，当继承来的属性值发生改变时候，会被自动通知，但是不饿能够为常量属性和只读属性添加属性观察器，因为它们不能够被改变。不能够同时复写属性观察器和属性的setter、getter方法。
+85、可以添加@final关键字，防止被重写，在clas前面添加final关键字标记整个类都不能被重写
+86、只要构造器定义了某个外部参数名,你就必须使用它,忽略它将导致编译错误
+87、可选属性类型,可选类型的属性将自动初始化为空 nil,表示这个属性是故意在初始化时 设置为空的
+88、对某个类实例来说,它的常量属性只能在定义它的类的构造过程中修改，不能在子类中修改
 */
 import UIKit
 
@@ -1962,5 +1968,147 @@ class ViewController: UIViewController {
         
         let car = Car()
         println("car description === \(car.description())")
+
+       //重写属性，可以复写setter和getter方法，但是不能只复写setter方法而不复写getter方法，也不能将一个属性复写只读属性,并且复写的属性的类型和名称要一致
+        class SpeedLimitedCar: Car{
+            override var speed: Double{
+                get{
+                    return super.speed
+                }
+                
+                set{
+                    super.speed = min(newValue, 40)
+                }
+            }
+        }
+        
+        //调用
+        var limitedSpeedCar = SpeedLimitedCar()
+        println("limitedSpeedCar == \(limitedSpeedCar.speed)")
+        
+        //复写属性观察器,可以为继承来的属性添加一个观察器，当继承来的属性值发生改变时候，会被自动通知，但是不饿能够为常量属性和只读属性添加属性观察器，因为它们不能够被改变。不能够同时复写属性观察器和属性的setter、getter方法。
+        class AutomaticCar:Car{
+            var geer = 1
+            override var speed: Double{
+                didSet{
+                    geer = Int(speed/10)+1
+                }
+            }
+            
+            override init() {
+            
+            }
+            
+            override func description() -> String {
+                return super.description()+" in geer \(geer)"
+            }
+        }
+        
+        let automticCar = AutomaticCar()
+        automticCar.speed = 40
+        println("AutomticCar is === \(automticCar.description())")
+        
+        //防止重写
+        //可以添加@final关键字，防止被重写，在clas前面添加final关键字标记整个类都不能被重写
+        
+        /****************************************构造器*****************************/
+        //类和结构体在实例创建时,必须为所有存储型属性设置合适的初始值。存储型属性的值不能处于一个未知的状态
+       /* struct Fahrenheit{
+            //声明一个存储型变量
+            var temperature: Double
+            //构造方法不带参数
+            init(){
+                temperature = 48
+            }
+        }*/
+        
+        struct Fahrenheit{
+            //直接赋默认值
+            var temperature = 48
+        }
+        
+        var f = Fahrenheit()
+        println("temperature === \(f.temperature)")
+        
+        //构造参数
+        struct Celsius{
+            var temperatureIncelsius = 0.0
+            //自定义构造参数
+            init(fromFahrenheit hrenheit: Double){
+                temperatureIncelsius = (hrenheit - 32.0)/18
+            }
+            
+            init(fromKevin kevin: Double){
+                temperatureIncelsius = kevin-273.15
+            }
+            
+            //缺省外部参数名称
+            init(ignorArg: Double){
+                temperatureIncelsius = ignorArg
+            }
+            
+            //不提供外部参数构造方法
+            init(_ temp: Double){
+                temperatureIncelsius = temp
+            }
+        }
+        
+        let hrenheitCelsius = Celsius(fromFahrenheit: 100)
+        let kevinCelsius = Celsius(fromKevin: 273.15)
+        let ignorCelsius = Celsius(12)
+        println("ignorCelsius.temperatureIncelsius === \(ignorCelsius.temperatureIncelsius)")
+        let tempCelius = Celsius(10)
+        println("tempCelius.temperatureIncelsius === \(tempCelius.temperatureIncelsius)")
+        
+        //只要构造器定义了某个外部参数名,你就必须使用它,忽略它将导致编译错误
+        //定义一个颜色结构体
+        struct Colors{
+            let red = 0.0,green = 0.0,blue = 0.0
+            init(red: Double,green: Double,blue: Double){
+                self.red = red
+                self.green = green
+                self.blue = blue
+            }
+        }
+        
+        let color = Colors(red: 255.0, green: 255.0, blue: 255.0)
+
+        //可选属性类型,可选类型的属性将自动初始化为空 nil,表示这个属性是故意在初始化时 设置为空的
+        class SuveryQuestion{
+            var text: String
+            var response: String?
+            init(text: String){
+                self.text = text
+            }
+            
+            func ask(){
+                println(text)
+            }
+        }
+        
+        let question = SuveryQuestion(text: "Are you ready?")
+        question.ask()
+        question.response = "Yes, i do!"
+        
+        //对某个类实例来说,它的常量属性只能在定义它的类的构造过程中修改;不能在子类中修改
+
+        struct RenterStruct{
+            let rentPrice: Double
+            let driver: Int
+            var passgers = 0
+            init(rentPrice: Double,driver: Int){
+                self.driver = driver;
+                self.rentPrice = rentPrice
+            }
+        }
+        
+        var renter = RenterStruct(rentPrice: 100, driver: 1)
+        renter.passgers = 4
+        
+        //Swift将为所有属性已提供默认值的且自身没有定义任何构造器的结构体或基类,提供一个默认的构造器
+//        class ShoppingList{
+//            var name: String
+//            var price: Double
+//        }
     }
 }
