@@ -104,6 +104,8 @@ Tips:
 89、值类型构造代理，￼构造器可以通过调用其它构造器来完成实例的部分构造过程。这一过程称为构造器代理,它能减少多个构造器间的代码重复，值类型没有继承。
 90、类里面的所有存储型属性--包括所有继承自父类的属性--都必须在构造过程中设置初始值。
 91、跟Objective-C 中的子类不同,Swift 中的子类不会默认继承父类的构造器。Swift的这种机制可以防止一个父类的简单构造器被一个更专业的子类继承,并被错误的用来创建子类的实例
+92、如果某个存储型属性的默认值需要特别的定制或准备,你就可以使用闭包或全局函数来为其属性某供定制的默认值。每当某个属性所属的新类型实例创建时,对应的闭包或函数会被调用,而它们的返回值会当做默认值赋值给这个属性。
+93、闭包后面跟一对大括号，表示立刻执行该闭包，如果忽略这对大括号，那么就是将闭包本身赋值给属性，而不是将返回值付给属性
 */
 import UIKit
 
@@ -2113,11 +2115,12 @@ class ViewController: UIViewController {
             var name: String?
             var purchsed = false
             var quality = 1
-            
             init(){
-                
+                self.name = ""
+                self.purchsed = true
+                self.quality = 1
             }
-        }
+            }
         var shop = ShoppingList()
         
         
@@ -2157,6 +2160,127 @@ class ViewController: UIViewController {
         //类的继承和构造过程
         //类里面的所有存储型属性--包括所有继承自父类的属性--都必须在构造过程中设置初始值。
         //跟Objective-C 中的子类不同,Swift 中的子类不会默认继承父类的构造器。Swift的这种机制可以防止一个父类的简单构造器被一个更专业的子类继承,并被错误的用来创建子类的实例
+        //指定构造器必须总是向上代理,便利构造器必须总是横向代理
         
+        /*
+        Swift 编译器将执行 4 种有效的安全检查,以确保两段式构造过程能顺利完成:
+        安全检查 1 指定构造器必须保证它所在类引入的所有属性都必须先初始化完成,之后才能将其它构造
+        任务向上代理给父类中的构造器。
+        如上所述,一个对象的内存只有在其所有存储型属性确定之后才能完全初始化。为了满足
+        这一规则,指定构造器必须保证它所在类引入的属性在它往上代理之前先完成初始化。
+        安全检查 2 指定构造器必须先向上代理调用父类构造器,然后再为继承的属性设置新值。如果没这么
+        做,指定构造器赋予的新值将被父类中的构造器所覆盖。
+        安全检查 3 便利构造器必须先代理调用同一类中的其它构造器,然后再为任意属性赋新值。如果没这 么做,便利构造器赋予的新值将被同一类中其它指定构造器所覆盖。
+        安全检查 4 构造器在第一阶段构造完成之前,不能调用任何实例方法、不能读取任何实例属性的值, 也不能引用 self 的值。
+        */
+        
+        //两段式构造过程中基于上述安全检查的构造流程
+        /*
+        阶段 1
+        某个指定构造器或便利构造器被调用; 完成新实例内存的分配,但此时内存还没有被初始化;
+        指定构造器确保其所在类引入的所有存储型属性都已赋初值。存储型属性所属的内存完成
+        初始化;
+        指定构造器将调用父类的构造器,完成父类属性的初始化;
+        这个调用父类构造器的过程沿着构造器链一直往上执行,直到到达构造器链的最顶部;
+        当到达了构造器链最顶部,且已确保所有实例包含的存储型属性都已经赋值,这个实例的 内存被认为已经完全初始化。此时阶段 1 完成。
+        阶段 2
+        从顶部构造器链一直往下,每个构造器链中类的指定构造器都有机会进一步定制实例。构
+        造器此时可以访问 self、修改它的属性并调用实例方法等等。 最终,任意构造器链中的便利构造器可以有机会定制实例和使用 self。
+        */
+        
+        //便利构造器在init之前加上convenience
+        class Food{
+            var name: String?
+            init(name: String){
+            self.name = name
+            }
+            //便利构造方法
+            convenience init(){
+            //需要先调用init
+            self.init(name:"[Unamed]")
+            }
+        }
+        
+        var food = Food(name: "Jerry")
+        println("foodName == \(food.name)")
+        let food2 = Food()
+        println("foodName2 == \(food.name)")
+        
+        class RecipeIngredient: Food {
+            var quantity: Int
+             init(name: String, quantity: Int) {
+            self.quantity = quantity
+            super.init(name: name)
+            }
+        override convenience init(name: String) {
+            self.init(name: name, quantity: 1)
+            }
+        }
+        
+        var ingredient1 = RecipeIngredient(name: "Kebo", quantity: 2)
+        println("quantity == \(ingredient1.quantity)","name === \(ingredient1.name)")
+        var ingredient2 = RecipeIngredient(name: "Koo")
+        println("name2 === \(ingredient2.name)")
+        
+        class ShopListItem:RecipeIngredient{
+            var purchesed = false
+            //计算属性，提供getter、setter方法
+            var description: String{
+            var outPut = "\(quantity) x \(name?.lowercaseString)"
+            return outPut
+            }
+        }
+        //初始化
+        var shopListItem1 = ShopListItem()
+        println("name1=== \(shopListItem1.name)" ,"quantity1 == \(shopListItem1.quantity)")
+        var shopListItem2 = ShopListItem(name: "Dor")
+        println("name2=== \(shopListItem2.name)", "quantity2 == \(shopListItem2.quantity)")
+        var shopListItem3 = ShopListItem(name: "Sery", quantity: 3)
+        println("name3=== \(shopListItem3.name)", "quantity3 == \(shopListItem3.quantity)")
+
+        //声明一个数组
+        var breakFastList = [
+         ShopListItem(),
+         ShopListItem(name: "Dor"),
+         ShopListItem(name: "Sery", quantity: 3),
+        ]
+        breakFastList[0].name = "Orange Juice"
+        breakFastList[0].purchesed = true
+        for item in breakFastList{
+                println("===== \(item.name)","++++ \(item.purchesed)")
+        }
+        
+       //闭包和函数设置属性默认值
+        //如果某个存储型属性的默认值需要特别的定制或准备,你就可以使用闭包或全局函数来为其属性某供定制的默认值。每当某个属性所属的新类型实例创建时,对应的闭包或函数会被调用,而它们的返回值会当做默认值赋值给这个属性。
+       //闭包后面跟一对大括号，表示立刻执行该闭包，如果忽略这对大括号，那么就是将闭包本身赋值给属性，而不是将返回值付给属性
+//        struct CheckBoards{
+//            let boardColors: Bool[] = {//将闭包的返回值付给属性数组boardColors
+//            var tempBoard  = Bool[]() //声明一个闭包属性
+//            var isBlack = false
+//            for i in 1...10{
+//            for j in 1...10{
+//               tempBoard.append(isBlack)
+//               isBlack = !isBlack
+//              }
+//            isBlack = !isBlack
+//            }
+//            return tempBoard
+//            }()
+//            
+//            func squareBlackAtRow(row: Int,column: Int)->Bool{
+//               return boardColors[(row*10) + column]
+//            }
+//        }
+        
+//        var checkBoard = CheckBoards
+//        println("---  \(checkBoard.squareBlackAtRow(0, column: 1))")
+//        println("---  \(checkBoard.squareBlackAtRow(1, column: 0))")
+        
+        //
     }
+    
+    /****************************************反初始化*****************************/
+    //在类的实例被释放前，反初始化函数deinit被调用，只适用于类类型，并且只有一个反初始化方法，不带任何参数，不允许调用自己的反初始化函数
+    
+
 }
