@@ -106,6 +106,11 @@ Tips:
 91、跟Objective-C 中的子类不同,Swift 中的子类不会默认继承父类的构造器。Swift的这种机制可以防止一个父类的简单构造器被一个更专业的子类继承,并被错误的用来创建子类的实例
 92、如果某个存储型属性的默认值需要特别的定制或准备,你就可以使用闭包或全局函数来为其属性某供定制的默认值。每当某个属性所属的新类型实例创建时,对应的闭包或函数会被调用,而它们的返回值会当做默认值赋值给这个属性。
 93、闭包后面跟一对大括号，表示立刻执行该闭包，如果忽略这对大括号，那么就是将闭包本身赋值给属性，而不是将返回值付给属性
+94、引用计数只应用在类的实例。结构体(Structure)和枚举类型是值类型,并非引用类型,不是以引用的方式来存储和传递的
+95、swfit提供两种方式避免循环引用，弱引用和无主引用
+//对于生命周期中引用会变为 nil 的实例,使用弱引用;对于初始化时赋值之后引用再也不会赋值为 nil 的实例,使用无主引用。
+//弱引用只能声明为变量类型,因为运行时它的值可能改变。弱引用绝对不能声明为常量。
+
 */
 import UIKit
 
@@ -127,6 +132,8 @@ class ViewController: UIViewController {
         learnMethodChapter()
         learnSubScript()
         learnInheritChapter()
+        learnDeinitChapter()
+        learnARCChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -2282,5 +2289,89 @@ class ViewController: UIViewController {
     /****************************************反初始化*****************************/
     //在类的实例被释放前，反初始化函数deinit被调用，只适用于类类型，并且只有一个反初始化方法，不带任何参数，不允许调用自己的反初始化函数
     
-
+    func learnDeinitChapter(){
+        struct Bank{
+            static var coinsInBank = 10_000 //静态变量
+            static func vendCoins(var numberOfConis: Int)->Int{//声明一个变量参数，可以直接使用，不用再声明一个变量
+                numberOfConis = min(numberOfConis, coinsInBank)
+                return numberOfConis
+            }
+            //静态方法
+            static func recevieConis(conis: Int){
+                coinsInBank += conis
+            }
+        }
+        
+        class Player {
+            var coinsInPurse: Int
+            init(coins: Int){
+                coinsInPurse = Bank.vendCoins(coins)
+            }
+            func winsCoins(coins: Int){
+                coinsInPurse += Bank.vendCoins(coins)
+            }
+            //析构反初始化
+            deinit{
+                Bank.recevieConis(coinsInPurse)
+            }
+        }
+        
+        var playerFirst:Player? = Player(coins: 100)//？是可选类型，实例后面加!号表示值确定了，不能为nil
+        var numberCoins = playerFirst!.coinsInPurse
+        println("numberCoins == \(numberCoins)")
+        playerFirst!.winsCoins(3_000)
+        //实例后面添加感叹号进行修饰
+        println("numberCoins1 == \(playerFirst!.coinsInPurse)")
+        
+        //释放实例变量,自动调用析构函数
+        playerFirst = nil;
+        println("coinsInBank == \(Bank.coinsInBank)")
+    }
+    
+    /****************************************ARC*****************************/
+    //引用计数只应用在类的实例。结构体(Structure)和枚举类型是值类型,并非引用类型,不是以引用的方式来存储和传递的
+   func learnARCChapter(){
+    class Personal{
+    var name: String
+    var department: DepartMent?//可选类型
+    init(name: String){
+    self.name = name
+    }
+    
+    deinit{
+    println("Personal is deinit!")
+     }
+    }
+    
+    class DepartMent {
+    var numberOfPersonal: Int
+    weak var perosnal: Personal?//可选类型
+    init(numberOfPersonal: Int){
+    self.numberOfPersonal = numberOfPersonal
+    }
+    
+    deinit{
+    println("Department is Deinit!")
+     }
+    }
+    
+    //声明一个可选变量
+    var dulante: Personal? //因为是可选类型，初始化为nil
+    var number711: DepartMent?
+    //初始化实例对象
+    dulante = Personal(name: "dulante applesed")
+    number711 = DepartMent(numberOfPersonal: 11)
+    //赋值
+    dulante?.department = number711
+    number711?.perosnal = dulante
+    //以上dulante引用number711，同时number711引用dulante，造成循环引用，不能够释放
+    //释放变量也不能够释放
+    dulante = nil//没有调用deinit打印Personal is deinit!
+    number711 = nil//没有调用deinit打印Department is Deinit!
+    //swfit提供两种方式避免循环引用，弱引用和无主引用
+    //对于生命周期中引用会变为 nil 的实例,使用弱引用;对于初始化时赋值之后引用再也不会赋值为 nil 的实例,使用无主引用。
+    //弱引用只能声明为变量类型,因为运行时它的值可能改变。弱引用绝对不能声明为常量。
+    
+    }
+    
 }
