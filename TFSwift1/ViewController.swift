@@ -110,7 +110,11 @@ Tips:
 95、swfit提供两种方式避免循环引用，弱引用和无主引用
 //对于生命周期中引用会变为 nil 的实例,使用弱引用;对于初始化时赋值之后引用再也不会赋值为 nil 的实例,使用无主引用。
 //弱引用只能声明为变量类型,因为运行时它的值可能改变。弱引用绝对不能声明为常量。
-
+//无主引用，无主引用只能是非可选类型，始终有默认值，在变量前面可以添加unowned表示。
+96、两个属性都必须有值,且初始化完成后不能为 nil。这种场景下,则 要一个类用无主引用属性,另一个类用隐式展开的可选属性。
+97、只要在闭包内使用 self 的成员,就要用 self.someProperty 或者self.someMethod(而非只是 someProperty 或 someMethod)。这可以提醒你可能会不小心 就占有了 self。
+98、占位列表，占有列表定义了闭包内占有一个或者多个引用类型的规则。和解决两个类实例间的强引 用环一样,声明每个占有的引用为弱引用或无主引用,而不是强引用。根据代码关系来决定使用弱引用还是无主引用,占有列表中的每个元素都是由 weak 或者 unowned 关键字和实例的引用,每一对都在花括号中,通过逗号分开。例如[unowned self]
+99、如果自判断的目标有值,那么调用 就会成功;相反,如果选择的目标为空(nil),则这种调用将返回空(nil)
 */
 import UIKit
 
@@ -134,6 +138,7 @@ class ViewController: UIViewController {
         learnInheritChapter()
         learnDeinitChapter()
         learnARCChapter()
+        learnTypeCast()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -2371,7 +2376,202 @@ class ViewController: UIViewController {
     //swfit提供两种方式避免循环引用，弱引用和无主引用
     //对于生命周期中引用会变为 nil 的实例,使用弱引用;对于初始化时赋值之后引用再也不会赋值为 nil 的实例,使用无主引用。
     //弱引用只能声明为变量类型,因为运行时它的值可能改变。弱引用绝对不能声明为常量。
+    //无主引用，无主引用只能是非可选类型，始终有默认值，在变量前面可以添加unowned表示。
     
+    class CreditCard{//一张卡肯定对应一个人，是常量
+        var  number: Int
+        unowned let customer: Customer//必须要指定初始化函数初始化
+        init(number: Int,custome: Customer){
+            self.number = number
+            self.customer = custome
+        }
+        deinit{
+            println("Card #\(number) is deinit!")
+        }
     }
+    
+    class Customer{//人不一定拥有一张卡
+        
+        var name: String?
+        var card: CreditCard? //初始化为nil
+        init(name: String){
+            self.name = name
+        }
+        deinit{
+            println("Customer #\(name) is deinit!")
+        }
+    }
+    var jone = Customer(name: "jone")
+    var card = CreditCard(number: 100, custome: jone)
+    jone.card = card
+    
+    //两个属性都必须有值,且初始化完成后不能为 nil。这种场景下,则 要一个类用无主引用属性,另一个类用隐式展开的可选属性。
+    //隐式展开的可选属性。
+    class Capital{
+        var name: String?
+        //一个城市肯定属于一个国家，但是一个国家可以拥有多个城市
+        unowned let country: Country
+        init(name: String,country: Country){
+        self.name = name
+        self.country = country
+        }
+        deinit{
+         
+        }
+    }
+    
+    class Country{
+        var name: String
+        let captial: Capital!
+        init(name: String,captial: String){
+            self.name = name
+            self.captial = Capital(name: captial, country: self)
+        }
+        deinit{
+            
+        }
+    }
+    var country = Country(name: "US", captial: "NewYork")
+    println("country name is === \(country.name),captial name is ==== \(country.captial.name)")
+    
+    //闭包强引用
+    //只要在闭包内使用 self 的成员,就要用 self.someProperty 或者self.someMethod(而非只是 someProperty 或 someMethod)。这可以提醒你可能会不小心 就占有了 self。
+//    class HTML{
+//        let name: String
+//        let text: String?
+//       @lazy var asHTML:() -> String = {
+//            if let text = self.text{
+//                return self.text
+//            }else{
+//                return self.text
+//            }
+//        }
+//        init(name: String,text: String? = nil){
+//            self.name = name
+//            self.text = text
+//        }
+//    }
+    
+    //占位列表，占有列表定义了闭包内占有一个或者多个引用类型的规则。和解决两个类实例间的强引 用环一样,声明每个占有的引用为弱引用或无主引用,而不是强引用。根据代码关系来决定使用弱引用还是无主引用,占有列表中的每个元素都是由 weak 或者 unowned 关键字和实例的引用,每一对都在花括号中,通过逗号分开。例如[unowned self]
+    /*class P{
+        var name: String?
+        let id: Int
+        @lazy var Score: ()-> String = {
+            //占位列表
+            [unowned self] in
+            return "100"
+        }
+        init(name: String? = nil,id: Int){
+            self.name = name
+            self.id = id
+        }
+        
+        deinit{
+            println("p is deinit !\(name)")
+        }
+    }
+    var p = P(name: "Dan", id: 100001)*/
+    
+    //自判断链接
+    //如果自判断的目标有值,那么调用 就会成功;相反,如果选择的目标为空(nil),则这种调用将返回空(nil)
+    class Person{
+        var residence: Residence? = nil
+    }
+    
+    class Residence {
+        var numberOfRooms = 1
+    }
+    
+    //此时residence为nil
+    let john = Person()
+    //此时john.residence已经初始化不为nil
+    john.residence = Residence()
+    //报运行时态错误
+//    let roomCount = john.residence!.numberOfRooms
+    if let roomCount = john.residence?.numberOfRooms{
+        println("John's residence has \(roomCount) room(s)")
+    }else{
+        println("Unable to retrieve the number of rooms.")
+    }
+    
+    //为自判断链接定义模型类
+   
+    class Residence1 {
+        var rooms = []
+        var numberOfRooms: Int {
+            return rooms.count
+        }
+        var address: Address?
+        subscript(i: Int) -> Room {
+            get {
+                return rooms[i] as Room
+            }
+            
+        }
+        func printNumberOfRooms() {
+            println("The number of rooms is \(numberOfRooms)")
+        }
+
+    }
+    
+    class Room {
+        let name: String
+        init(name: String) { self.name = name }
+    }
+    
+    class Address {
+        var buildingName: String?
+        var buildingNumber: String?
+        var street: String?
+        func buildingIdentifier() -> String? {
+            if buildingName != nil {
+                return buildingName
+            } else if buildingNumber != nil {
+                return buildingNumber
+            } else {
+                return nil
+            }
+        }
+    }
+    let jonh = Person()
+    //如果有值
+    if let roomCount = jonh.residence?.numberOfRooms{
+        println("roomCount has \(roomCount)")
+    }else{
+        println("Unable to retrieve the number of rooms.")
+    }
+    
+    //调用方法
+//    if jonh.residence?.printNumberOfRooms() != nil {
+//        
+//    }else{
+//        
+//    }
+    
+    //访问脚本下标取值
+//    if let firstRoomName = jonh.residence?.[0].name{
+//        
+//    }else{
+//        
+//    }
+    
+//    jonh.residence?.[0] = Room
+    var testScore = ["Davd": [90,70,68],"Bev": [80,87,85]]
+    testScore["Davd"]?[0] = 87//替换第一个角标原色
+    testScore["Bev"]?[2] = 83
+    testScore["Bev"]?[0]++ //“Bev”对应数组第一个元素+1 输出是81
+    println("testScore === \(testScore)")
+
+    //多层连接
+//    if let jonhStree = jonh.residence?.address?.street{
+//    
+//    }
+    }
+    
+    /****************************************类型转换*****************************/
+    func learnTypeCast(){
+        
+    }
+    
     
 }
