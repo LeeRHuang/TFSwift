@@ -2570,7 +2570,48 @@ class ViewController: UIViewController {
     
     /****************************************类型转换*****************************/
     func learnTypeCast(){
+        //类型转换，使用is和as作为标示
+        class Personal{
+            var name:String?
+            init(name:String){
+                self.name = name
+            }
+        }
         
+        //继承自Personal
+        class Student:Personal{
+            var scoal:Double
+            init(scoal:Double,name:String){
+                self.scoal = scoal
+                super.init(name: name);
+            }
+        }
+        
+        //继承自Personal
+        class Teacher:Personal{
+            var level: Int?
+            init(level: Int,name: String){
+                self.level = level
+                super.init(name: name)
+            }
+        }
+        
+        let arrays = [Personal(name: "lee"),
+                      Student(scoal: 100, name: "Mark"),
+                      Student(scoal: 90, name: "Tim"),
+                      Teacher(level: 10, name: "Tom"),
+                      Teacher(level: 8, name: "Andy")]
+        //遍历
+        var studentCount = 0
+        var teacherCount = 0
+        for item in arrays{
+            if item is Student{
+                studentCount++
+            }else if item is Teacher{
+                teacherCount++
+            }
+        }
+        println("studentCount == \(studentCount),teacherCount == \(teacherCount)")
     }
     
     
