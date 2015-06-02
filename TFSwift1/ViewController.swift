@@ -115,8 +115,74 @@ Tips:
 97、只要在闭包内使用 self 的成员,就要用 self.someProperty 或者self.someMethod(而非只是 someProperty 或 someMethod)。这可以提醒你可能会不小心 就占有了 self。
 98、占位列表，占有列表定义了闭包内占有一个或者多个引用类型的规则。和解决两个类实例间的强引 用环一样,声明每个占有的引用为弱引用或无主引用,而不是强引用。根据代码关系来决定使用弱引用还是无主引用,占有列表中的每个元素都是由 weak 或者 unowned 关键字和实例的引用,每一对都在花括号中,通过逗号分开。例如[unowned self]
 99、如果自判断的目标有值,那么调用 就会成功;相反,如果选择的目标为空(nil),则这种调用将返回空(nil)
+100、类型转换，使用is和as操作符，这两个操作符提供了一种简单达意的方式去 检查值的类型或者转换它的类型
+101、AnyObject可以表示任何Class类型的实例；Any类型,使用Any类型可以添加各种不同类型混合在一起
+102、扩展就是向一个已有的类、结构体或枚举类型添加新功能(functionality)
+103、￼注意:扩展可以添加新的计算属性,但是不可以添加存储属性,也不可以向已有属性添加属性观测器(property observers)
 */
 import UIKit
+
+extension Double {
+    var km: Double {return self * 1_000.0}
+    var m: Double { return self }
+    var cm: Double { return self / 100.0 }
+    var mm: Double { return self / 1_000.0 }
+    var ft: Double { return self / 3.28084 }
+}
+
+struct Point {
+    var x = 0,y = 0
+}
+
+struct Size {
+    var width = 0,height = 0
+}
+
+struct Rect {
+    var point = Point()
+    var size = Size()
+}
+
+extension Rect{
+    
+    init(center: Point,size :Size){//提供新的构造器
+        let originX = center.x-(size.width/2)
+        let originY = center.y-(size.height/2)
+        self.init(point: Point(x: originX, y: originY), size: size)
+    }
+    
+    func instanceFunc(){//添加方法
+        println("instanceFunc extension!")
+    }
+    
+    //静态方法
+    static func test(){
+        println("test extension!")
+    }
+}
+
+extension Int{
+    //实例方法
+    func reptitions(task :()->()){//()->()表明是单参数，没有参数也没用返回值
+        for i in 0...self{
+            task()
+        }
+    }
+    
+    //修改实例方法
+    mutating func square()->Int{
+        return self*self
+    }
+    
+    //脚本下标
+    subscript(digitIndex: Int) -> Int {
+         var decimalBase = 1
+         for _ in 1...digitIndex {
+        decimalBase *= 10
+        }
+        return (self / decimalBase) % 10
+      }
+}
 
 class ViewController: UIViewController {
 
@@ -139,6 +205,8 @@ class ViewController: UIViewController {
         learnDeinitChapter()
         learnARCChapter()
         learnTypeCast()
+        learnNestTypeCharpter()
+        learnExtensionChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -2570,7 +2638,7 @@ class ViewController: UIViewController {
     
     /****************************************类型转换*****************************/
     func learnTypeCast(){
-        //类型转换，使用is和as作为标示
+        //类型转换，使用is和as操作符，这两个操作符提供了一种简单达意的方式去 检查值的类型或者转换它的类型
         class Personal{
             var name:String?
             init(name:String){
@@ -2604,7 +2672,7 @@ class ViewController: UIViewController {
         //遍历
         var studentCount = 0
         var teacherCount = 0
-        for item in arrays{
+        for item in arrays{//item实质是Personal类型
             if item is Student{
                 studentCount++
             }else if item is Teacher{
@@ -2612,7 +2680,121 @@ class ViewController: UIViewController {
             }
         }
         println("studentCount == \(studentCount),teacherCount == \(teacherCount)")
+        
+        //类型向下转型
+        for item in arrays{
+            if let student = item as? Student{
+                println("student == \(student.scoal)")
+            }else if let teacher = item as? Teacher{
+                println("teacher == \(teacher.level)")
+            }
+        }
+        //Any和AnyObject转换
+        //AnyObject可以表示任何Class类型的实例
+        //Any表示任何类型，除了方法类型
+        
+        let someObject: [AnyObject] = [
+//            Personal(name: "lee"),
+            Student(scoal: 100, name: "Mark"),
+            Student(scoal: 90, name: "Tim"),
+//            Teacher(level: 10, name: "Tom"),
+        ]
+        
+        for items in someObject{
+            let student = items as Student
+            println("name1 == \(student.name),scoal1 == \(student.scoal)")
+        }
+        
+        for item in someObject as [Student]{
+            println("name2 == \(item.name),scoal2 == \(item.scoal)")
+        }
+        
+        //Any类型,使用Any类型可以添加各种不同类型混合在一起
+        var things = [Any]()
+        things.append("1")
+        things.append(2)
+        things.append(2.0)
+//        things.append((10,30))//添加元组
+        things.append(Student(scoal: 90, name: "Tim"))//添加对象
+        
+        for item in things{
+            switch item{
+            case 0 as Int:
+                println("zero is int!")
+            case 0 as Double:
+                println("zero is double!")
+            case let someInt as Int:
+                println("an integer value of \(someInt)")
+            default:
+                println("default!")
+            }
+        }
+        
+        
     }
     
+    /********************************************类型嵌套****************************************/
+    func learnNestTypeCharpter(){
+        struct BlacJackCard{
+            //嵌套枚举
+            enum Suit:Character{
+                case Spades = "♦️",Hearts = "❤️",Diamonds = "♠️",Clubs = "♣️"
+            }
+            enum Rank:Int{
+                case Two = 2,Three,Four,Five,Six,Seven,Eight,Nine,Ten
+                case Jack,Queen,King,Ace
+                //定义一个结构体
+                struct Values {
+                    //默认有个初始化方法
+                    let first: Int, second: Int?
+                }
+                //计算属性
+                var vaules:Values{
+                    switch self{
+                    case .Ace:
+                        return Values(first: 1, second: 10)
+                    case .Jack,.Queen,.King:
+                        return Values(first: 1, second: nil)
+                    default:
+                        return Values(first: self.rawValue, second: nil)
+                    }
+                }
+                
+            }
+        }
+        
+    }
     
+    /********************************************扩展****************************************/
+    //扩展就是向一个已有的类、结构体或枚举类型添加新功能(functionality)
+    //￼注意:扩展可以添加新的计算属性,但是不可以添加存储属性,也不可以向已有属性添加属 性观测器(property observers)
+    func learnExtensionChapter(){
+        
+        let onInch = 25.4.mm        // 0.0254
+        let threeFeet = 3.ft        // 0.914399970739201
+        println("onInch == \(onInch)")
+        
+        let defaultRect = Rect()
+        let assginRect = Rect(point: Point(x: 10, y: 20), size: Size(width: 100, height: 200))
+        let centerRect = Rect(center: Point(x: 20, y: 30), size: Size(width: 200, height: 300))
+        centerRect.instanceFunc()//实例方法
+        Rect.test()//静态方法
+        
+        //调用扩展中的方法
+        3.reptitions { () -> () in
+            println("Hello!")
+        }
+        
+        2.reptitions{
+            println("world!")
+        }
+        
+        var value = 10
+        var result = value.square()
+        println("result == \(result)")
+        
+        println("subscript == \(1238[2])")
+
+        
+    }
 }
