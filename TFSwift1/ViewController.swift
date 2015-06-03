@@ -119,6 +119,8 @@ Tips:
 101、AnyObject可以表示任何Class类型的实例；Any类型,使用Any类型可以添加各种不同类型混合在一起
 102、扩展就是向一个已有的类、结构体或枚举类型添加新功能(functionality)
 103、￼注意:扩展可以添加新的计算属性,但是不可以添加存储属性,也不可以向已有属性添加属性观测器(property observers)
+104、Protocol(协议)用于统一方法和属性的名称,而不实现任何功能。协议能够被类,枚举,结 构体实现,满足协议要求的类,枚举,结构体被称为协议的遵循者
+105、用 class 实现协议中的 mutating 方法时,不用写 mutating 关键字;用结构体,枚举实现协议中的 mutating 方法时,必须写mutating关键字
 */
 import UIKit
 
@@ -184,6 +186,25 @@ extension Int{
       }
 }
 
+extension Character{
+        
+        enum Kind{
+        case Vowel,Consonant,Other
+        }
+        
+        //计算性属性
+        var kind: Kind {
+        switch String(self).lowercaseString{
+        case "a", "e", "i", "o", "u": return .Vowel
+        case "b", "c", "d", "f", "g", "h", "j", "k", "l", "m",
+            "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z":
+        return .Consonant default:
+            return .Other
+          }
+        }
+}
+
+
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
@@ -207,6 +228,7 @@ class ViewController: UIViewController {
         learnTypeCast()
         learnNestTypeCharpter()
         learnExtensionChapter()
+        learnProtoclChapter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -2795,6 +2817,116 @@ class ViewController: UIViewController {
         
         println("subscript == \(1238[2])")
 
-        
+        func printLetterKinds(word :String){
+        println("\(word)is made up of the following kinds of letters!")
+        for character in word{
+        switch character.kind{
+        case .Vowel:
+            println("Vowel")
+        case .Consonant:
+            println("Consonant")
+        case .Other:
+            println("Other")
+        }
+         }
+            }
+                    
+        printLetterKinds("HHeeww")
     }
+            
+    /********************************************协议****************************************/
+    func learnProtoclChapter(){
+            
+            struct Personal: FullNamed{
+            var fullName: String
+            }
+            
+           let name = Personal(fullName: "LeeRiHuang")
+            
+            class StartFish: FullNamed,RandomNumber{//包含要实现的协议
+                var prefix: String?
+                var name: String
+                init(prefix: String? = nil,name: String){
+                self.prefix = prefix
+                self.name = name
+                }
+                var fullName: String{//实现协议中定义的变量
+                return prefix!+name
+                }
+                
+                var a = 100.90,b = 3219.7,c = 4567.8,lastRandom = 32.8
+                func random()->Double{
+                    lastRandom = ((a*lastRandom+c)%b)
+                    return lastRandom
+                }
+            }
+            
+            let fullName = StartFish(prefix: "US", name: "Jonal")
+            println("fullName == \(fullName)")
+            let randomVaule = fullName.random()
+            println("randomVaule === \(randomVaule)")
+            
+            //用 class 实现协议中的 mutating 方法时,不用写 mutating 关键字;用结构体,枚举
+           // 实现协议中的 mutating 方法时,必须写 mutating 关键字
+            enum OnOffSwitch:Toggolable{
+                case On,Off
+                mutating func toggle(){//实现代理方法
+                switch self{
+                case On:
+                  self = On
+                case .Off:
+                  self = Off
+                 }
+               }
+            }
+           var lightSwitch = OnOffSwitch.Off
+           lightSwitch.toggle()
+           println("toggle == \(lightSwitch.toggle())")
+            
+            class LinearCongruentialGenerator: RandomNumber {
+                    var lastRandom = 42.0
+                    let m = 139968.0
+                    let a = 3877.0
+                    let c = 29573.0
+                    func random() -> Double {
+                    lastRandom = ((lastRandom * a + c) % m)
+                    return lastRandom / m
+                    }
+            }
+            
+           class Dice{
+                    let sides: Int
+                    let generator:LinearCongruentialGenerator
+                    init(sides: Int,generator: LinearCongruentialGenerator){
+                    self.sides = sides
+                    self.generator = generator
+                    }
+                    
+                    func roll()->Int{
+                       return (Int)(generator.random() * Double(sides))+1
+                    }
+            }
+            
+            var dice = Dice(sides: 6, generator: LinearCongruentialGenerator())
+            for _ in 1...5 {
+                println("dice == \(dice.roll())")
+            }
+            
+           
+            
+    }
+
+}
+
+//协议声明
+protocol FullNamed{
+        var fullName: String{get}//只读属性
+}
+
+protocol RandomNumber{
+     func random()->Double
+}
+
+protocol Toggolable{
+    mutating func toggle()//表示可以改变
 }
