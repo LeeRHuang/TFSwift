@@ -2911,9 +2911,6 @@ class ViewController: UIViewController {
             for _ in 1...5 {
                 println("dice == \(dice.roll())")
             }
-            
-           
-            
     }
 
 }
