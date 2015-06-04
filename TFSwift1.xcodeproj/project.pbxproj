@@ -14,7 +14,6 @@
 		042B9C181A305D0400F47954 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 042B9C161A305D0400F47954 /* LaunchScreen.xib */; };
 		042B9C241A305D0400F47954 /* TFSwift1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B9C231A305D0400F47954 /* TFSwift1Tests.swift */; };
 		04BB0FC21A5A31F600DE2859 /* TestClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04BB0FC11A5A31F600DE2859 /* TestClass.swift */; };
-		7CC58B8E1B1D8B7200B84DDF /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC58B8D1B1D8B7200B84DDF /* DoubleExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +38,6 @@
 		042B9C221A305D0400F47954 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		042B9C231A305D0400F47954 /* TFSwift1Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TFSwift1Tests.swift; sourceTree = "<group>"; };
 		04BB0FC11A5A31F600DE2859 /* TestClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestClass.swift; sourceTree = "<group>"; };
-		7CC58B8D1B1D8B7200B84DDF /* DoubleExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,7 +82,6 @@
 				042B9C0D1A305D0400F47954 /* AppDelegate.swift */,
 				042B9C0F1A305D0400F47954 /* ViewController.swift */,
 				04BB0FC11A5A31F600DE2859 /* TestClass.swift */,
-				7CC58B8D1B1D8B7200B84DDF /* DoubleExtension.swift */,
 				042B9C111A305D0400F47954 /* Main.storyboard */,
 				042B9C141A305D0400F47954 /* Images.xcassets */,
 				042B9C161A305D0400F47954 /* LaunchScreen.xib */,
@@ -218,7 +215,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CC58B8E1B1D8B7200B84DDF /* DoubleExtension.swift in Sources */,
 				042B9C101A305D0400F47954 /* ViewController.swift in Sources */,
 				04BB0FC21A5A31F600DE2859 /* TestClass.swift in Sources */,
 				042B9C0E1A305D0400F47954 /* AppDelegate.swift in Sources */,
