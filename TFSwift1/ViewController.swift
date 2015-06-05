@@ -121,6 +121,11 @@ Tips:
 103、￼注意:扩展可以添加新的计算属性,但是不可以添加存储属性,也不可以向已有属性添加属性观测器(property observers)
 104、Protocol(协议)用于统一方法和属性的名称,而不实现任何功能。协议能够被类,枚举,结 构体实现,满足协议要求的类,枚举,结构体被称为协议的遵循者
 105、用 class 实现协议中的 mutating 方法时,不用写 mutating 关键字;用结构体,枚举实现协议中的 mutating 方法时,必须写mutating关键字
+106、协议能够继承一到多个其他协议。语法与类的继承相似,多个协议间用逗号,分隔
+107、一个协议可由多个协议采用 protocol<SomeProtocol, AnotherProtocol>这样的格式进行组
+合,称为协议合成(protocol composition)
+108、可选协议含有可选成员,其遵循者可以选择是否实现这些成员。在协议中使用@optional关键字作为前缀来定义可选成员。可选协议只能在含有@objc 前缀的协议中生效。且@objc 的协议只能被类遵循
+109、泛型代码可以让你写出根据自我需求定义、适用于任何类型的，灵活且可重用的函数和类型。它的可以让你避免重复的代码，用一种清晰和抽象的方式来表达代码的意图
 */
 import UIKit
 
@@ -229,6 +234,7 @@ class ViewController: UIViewController {
         learnNestTypeCharpter()
         learnExtensionChapter()
         learnProtoclChapter()
+        learnGenericesCharpter()
         /*********************************类**********************************/
 //        learnClassSyntax()
         // Do any additional setup after loading the view, typically from a nib.
@@ -2911,9 +2917,203 @@ class ViewController: UIViewController {
             for _ in 1...5 {
                 println("dice == \(dice.roll())")
             }
-    }
+        
+        //协议代理模式
+        //委托是一种设计模式,它允许类或结构体将一些需要它们负责的功能交由(委托)给其他的类型。
 
-}
+        //协议能够继承一到多个其他协议。语法与类的继承相似,多个协议间用逗号,分隔
+        //一个协议可由多个协议采用 protocol<SomeProtocol, AnotherProtocol>这样的格式进行组
+        //合,称为协议合成(protocol composition)
+        //协议合成并不会生成一个新协议类型,而是将多个协议合成为一个临时的协议,超出 范围后立即失效
+        struct People:Named,Aged{
+            var name: String
+            var age: Int
+        }
+        
+        func wishHappyBrithDay(celebrator:protocol<Named,Aged>){//这里传入已经实现合成协议的实例
+            println("Happy birthday \(celebrator.name) - you're \(celebrator.age)!")
+        }
+        
+        //初始化
+        let people = People(name: "Jone", age: 18)
+        wishHappyBrithDay(people)
+        
+        //检查协议一致性
+        //使用 is 检验协议一致性,使用 as 将协议类型向下转换(downcast)为的其他协议类型。检验
+        //与转换的语法和之前相同(详情查看类型检查):
+        //1. is 操作符用来检查实例是否遵循了􏰀个协议。
+        //2. as?返回一个可选值,当实例遵循协议时,返回该协议类型;否则返回 nil
+        //3. as 用以强制向下转换型。
+        //@objc 用来表示协议是可选的,也可以用来表示暴露给 Objective-C 的代码,此外,
+        //￼@objc 型协议只对类有效,因此只能在类中检查协议的一致性
+        class Circle: HasAera{
+            let ip = 3.1415926
+            var radius : Double
+            var area: Double
+            init(radius: Double,area: Double){
+            self.radius = radius
+            self.area = area
+            }
+          }
+        
+        class Country:HasAera{
+                var area: Double
+                init(area: Double){
+                self.area = area
+            }
+          }
+        
+        class Anmial{
+            var legs: Int
+            init(legs: Int){
+                self.legs = legs
+            }
+          }
+        //使用AnyObject包装几个不同类型对象
+        let anyArray: [AnyObject] = [
+          Circle(radius: 10, area: 200),
+          Country(area :3_000),
+          Anmial(legs: 4)
+        ]
+        //遍历
+        for object in anyArray{
+          if let temp = object as? HasAera{//判断是否显示协议，实现的话返回一个实例，否则返回nil
+             println("area is \(temp.area)")
+          }else{
+            println("don't has any area!")
+          }
+            
+            if object is HasAera{//是否实现了协议
+               println("has impletion HasArea!")
+            }else{
+            println("don't HasArea!")
+
+            }
+            
+        }
+        
+        //可选协议要求
+        //可选协议含有可选成员,其遵循者可以选择是否实现这些成员。在协议中使用@optional关键字作为前缀来定义可选成员。
+        //可选协议只能在含有@objc 前缀的协议中生效。且@objc 的协议只能被类遵循
+        @objc class Counter{
+            var count = 0//声明一个存储属性变量
+            var dataSource: ThreeSource?//声明一个协议类型变量
+            init(count: Int,dataSource: ThreeSource){
+                self.count = count
+                self.dataSource = dataSource
+            }
+
+            func incerment(){//定义一个方法
+                if let amount = dataSource?.incrementForCount(count){//dataSource可能为空，所以使用?表示只有为非空才去调用incrementForCount,但是dateSource不为空，incrementForCount也可能为空，所以在incrementForCount方法后面添加？
+                    count += amount
+                }else if let amount = dataSource?.fixedIncrementCoun{
+                    count += amount
+                }
+            }
+        }
+        
+        class ThreeSource: CounterDataSource {
+             let fixedIncrement = 3
+            func incrementForCount(count: Int)->Int{
+                return count
+            }
+            var fixedIncrementCoun: Int {
+                return fixedIncrement
+            }
+        }
+
+        class TowardsToZero:CounterDataSource {
+        func incrementForCount(count: Int) -> Int {
+                if count == 0{
+            return 0
+        }else if count < 0{
+            return -1
+        }else{
+            return 1
+            }
+          }
+        }
+        
+        var counter = Counter(count: 2,dataSource: ThreeSource())
+        for _ in 0...4{
+            counter.incerment()
+            println("count === \(counter.count)")
+        }
+        counter.count = -5
+        counter.dataSource = ThreeSource()
+        
+        }
+    
+   
+    /********************************************泛型****************************************/
+    func learnGenericesCharpter(){
+        func swapValue(inout a:Int,inout b:Int)->AnyObject{
+          let tempValue = a
+          a = b
+          b = tempValue
+        
+        return [a,b]
+        }
+        var a = 10
+        var b = 20
+        var value = swapValue(&a, &b)
+        println("value == \(value)")
+        
+        func swapTwoValues<T>(inout a:T,inout b:T){
+            let tempValue = a
+            a = b
+            b = tempValue
+            println("a===\(a),b === \(b)")
+        }
+        var someInt = 3
+        var anotherInt = 107
+        swapTwoValues(&someInt, &anotherInt)
+        
+        var stack = Stack<Int>()
+        stack.push(1)
+        stack.push(2)
+        stack.push(3)
+        stack.push(4)
+        
+        println("have \(stack.items) items in stack!")
+        
+        stack.pop()
+        println("after pop \(stack.items) in stack!")
+        
+        //类型约束
+        //类型约束指定了一个必须继承自指定类的类型参数，或者遵循一个特定的协议或协议构成
+        
+        func findIndex(array :[String],vauleToFinde :String)->Int?{
+            for (index,value) in enumerate(array){
+               //判断
+            if value == vauleToFinde{
+                return index
+            }
+          }
+            return nil
+        }
+        
+        //使用一个泛型T，后面接一个Equatable协议，表示类型都是可以比较等于的
+        func findIndexT<T: Equatable>(array :[T],vauleToFinde :T)->Int?{
+            for (index,value) in enumerate(array){
+            //判断
+            if value == vauleToFinde{
+                return index
+            }
+            }
+            return nil
+        }
+        
+        let indexTValue = findIndexT([1,4,8,0], 4)
+        println("indexTValue == \(indexTValue)")
+        
+        
+    }
+    
+    
+    }
+    
+
 
 //协议声明
 protocol FullNamed{
@@ -2926,4 +3126,32 @@ protocol RandomNumber{
 
 protocol Toggolable{
     mutating func toggle()//表示可以改变
+}
+
+protocol Named{
+    var name: String{get}
+}
+
+protocol Aged{
+    var age: Int{get}
+}
+
+@objc protocol HasAera{
+        var area: Double{get}
+}
+
+@objc protocol CounterDataSource{
+    optional func incrementForCount(count: Int)->Int  //加上option表示可选
+    optional  var fixedIncrementCoun: Int {get}
+}
+
+//单独定义泛型
+struct Stack<T> {
+    var items = [T]()
+    mutating func push(item: T) {
+        items.append(item)
+    }
+    mutating func pop() -> T {
+        return items.removeLast()
+    }
 }
