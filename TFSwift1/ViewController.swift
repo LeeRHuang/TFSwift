@@ -708,7 +708,7 @@ class ViewController: UIViewController {
         
         //调用countElements函数计算字符个数
         let unusualMenagerie = "my name is lee rihuang"
-        println("characterCountIs = \(countElements(unusualMenagerie))")
+//        println("characterCountIs = \(count(unusualMenagerie))")
         
         //不能将一个字符串或者字符添加到一个已经存在的字符变量上,因为字符变 量只能包含一个字符
         var string2 = "!"
@@ -1142,7 +1142,7 @@ class ViewController: UIViewController {
         
         func printStringElements(name:String)->Int{
             println("name is \(name)")
-            return countElements(name)
+            return count(name)
         }
         printStringElements("李德华")
         
@@ -1165,7 +1165,7 @@ class ViewController: UIViewController {
         
         //使用#代替外部形参
         func login(# mobile:String,#password:String)->Bool{
-            if countElements(mobile) > 0 && countElements(password) > 0{
+            if count(mobile) > 0 && count(password) > 0{
                 return true
             }
             return false
@@ -1249,7 +1249,7 @@ class ViewController: UIViewController {
         }
         
         func alignRight(var str:String,count:Int,pad:Character)->String{
-            let amountToPad = count - countElements(str)
+            let amountToPad = str.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
             for _ in 1...amountToPad{ //不需要遍历其中的值
                 str += "-"
             }
@@ -2178,10 +2178,13 @@ class ViewController: UIViewController {
         struct Colors{
             let red = 0.0,green = 0.0,blue = 0.0
             init(red: Double,green: Double,blue: Double){
-                self.red = red
-                self.green = green
-                self.blue = blue
+//                self.init()
+//                self.red = red
+//                self.green = green
+//                self.blue = blue
             }
+            
+        
         }
         
         let color = Colors(red: 255.0, green: 255.0, blue: 255.0)
@@ -2518,17 +2521,17 @@ class ViewController: UIViewController {
     
     class Country{
         var name: String
-        let captial: Capital!
+        let captial: String!
         init(name: String,captial: String){
             self.name = name
-            self.captial = Capital(name: captial, country: self)
+            self.captial = captial
         }
         deinit{
             
         }
     }
     var country = Country(name: "US", captial: "NewYork")
-    println("country name is === \(country.name),captial name is ==== \(country.captial.name)")
+    println("country name is === \(country.name),captial name is ==== \(country.captial)")
     
     //闭包强引用
     //只要在闭包内使用 self 的成员,就要用 self.someProperty 或者self.someMethod(而非只是 someProperty 或 someMethod)。这可以提醒你可能会不小心 就占有了 self。
@@ -2600,7 +2603,7 @@ class ViewController: UIViewController {
         var address: Address?
         subscript(i: Int) -> Room {
             get {
-                return rooms[i] as Room
+                return rooms[i] as! Room
             }
             
         }
@@ -2729,11 +2732,11 @@ class ViewController: UIViewController {
         ]
         
         for items in someObject{
-            let student = items as Student
+            let student = items as! Student
             println("name1 == \(student.name),scoal1 == \(student.scoal)")
         }
         
-        for item in someObject as [Student]{
+        for item in someObject as! [Student]{
             println("name2 == \(item.name),scoal2 == \(item.scoal)")
         }
         
@@ -2949,7 +2952,7 @@ class ViewController: UIViewController {
         class Circle: HasAera{
             let ip = 3.1415926
             var radius : Double
-            var area: Double
+            @objc var area: Double
             init(radius: Double,area: Double){
             self.radius = radius
             self.area = area
@@ -2957,7 +2960,7 @@ class ViewController: UIViewController {
           }
         
         class Country:HasAera{
-                var area: Double
+                @objc var area: Double
                 init(area: Double){
                 self.area = area
             }
